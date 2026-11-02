@@ -45,7 +45,7 @@
 }
 *,*::before,*::after{box-sizing:inherit}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:1rem;line-height:1.5;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:3px solid var(--violet);outline-offset:2px;border-radius:8px}
@@ -181,6 +181,16 @@ label.check-row input{width:20px;height:20px;accent-color:var(--violet)}
 .kick-btn b{font-family:var(--serif);font-weight:400;font-size:4rem;line-height:1}
 .kick-btn:active{transform:scale(.97)}
 .kick-time{font-variant-numeric:tabular-nums;font-size:1.1rem;font-weight:600}
+
+/* Appearance */
+.swatches{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sw{border:2px solid var(--line);border-radius:14px;padding:10px 4px;background:var(--surface);display:flex;flex-direction:column;align-items:center;gap:6px;font-size:.82rem;font-weight:600}
+.sw i{width:36px;height:36px;border-radius:50%;display:block;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.sw[aria-pressed="true"]{border-color:var(--violet)}
+.color-row{display:flex;align-items:center;gap:10px}
+.color-row span{flex:1}
+input[type=color]{width:56px;height:44px;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:3px;flex:none}
+.seg-ctl.tight{margin:6px 0 0}
 
 /* Timeline */
 .ms-list{display:flex;flex-direction:column;gap:8px}
@@ -336,7 +346,73 @@ const CAT_LABEL = {under:'underweight', normal:'normal', over:'overweight', obes
 /* ==================================================================
    State, storage and sync
 ================================================================== */
-const LS = 'for-two-v2', LS_PENDING = 'for-two-pending', LS_PIN = 'for-two-pin', LS_V1 = 'for-two-v1';
+const LS = 'for-two-v2', LS_PENDING = 'for-two-pending', LS_PIN = 'for-two-pin', LS_V1 = 'for-two-v1', LS_LOOK = 'for-two-look';
+
+/* ==================================================================
+   Appearance (saved per phone)
+================================================================== */
+const THEMES = {
+  lavender:{label:'Lavender',
+    light:{bg:'#F3F0F7', surface:'#FFFFFF', surface2:'#EAE5F1', line:'#DCD5E6', ink:'#2B2340', inkSoft:'#6A6280', accent:'#6B4FA0'},
+    dark: {bg:'#1C1726', surface:'#262033', surface2:'#312A41', line:'#3D3550', ink:'#EEE9F6', inkSoft:'#A9A0BC', accent:'#B49BE0'}},
+  sage:{label:'Sage',
+    light:{bg:'#EEF3EF', surface:'#FFFFFF', surface2:'#E1EAE3', line:'#CFDCD2', ink:'#1F2E26', inkSoft:'#5B6B61', accent:'#3E7B5C'},
+    dark: {bg:'#141C18', surface:'#1D2722', surface2:'#26332C', line:'#33433A', ink:'#E6F0EA', inkSoft:'#9DB0A4', accent:'#8CCBA8'}},
+  blush:{label:'Blush',
+    light:{bg:'#FBF0F2', surface:'#FFFFFF', surface2:'#F4E2E6', line:'#EAD3D9', ink:'#3A2229', inkSoft:'#7A5E66', accent:'#B4506E'},
+    dark: {bg:'#211619', surface:'#2C1E22', surface2:'#38272C', line:'#4A3439', ink:'#F6E8EC', inkSoft:'#BFA3AB', accent:'#F0A0B8'}},
+  ocean:{label:'Ocean',
+    light:{bg:'#EEF3F8', surface:'#FFFFFF', surface2:'#E0E9F2', line:'#CEDBE8', ink:'#1B2836', inkSoft:'#586879', accent:'#2F6CA8'},
+    dark: {bg:'#121A23', surface:'#1A2430', surface2:'#232F3D', line:'#30404F', ink:'#E5EEF7', inkSoft:'#9AACBE', accent:'#8DBDEB'}},
+  sand:{label:'Sand',
+    light:{bg:'#F6F2EA', surface:'#FFFFFF', surface2:'#ECE5D8', line:'#DDD3C2', ink:'#2E2820', inkSoft:'#6E6455', accent:'#8A6A2F'},
+    dark: {bg:'#1B1813', surface:'#25211A', surface2:'#302B22', line:'#40392D', ink:'#F1EBDF', inkSoft:'#B3A893', accent:'#D9B878'}},
+  slate:{label:'Slate',
+    light:{bg:'#F1F2F4', surface:'#FFFFFF', surface2:'#E4E6EA', line:'#D3D7DD', ink:'#1F2329', inkSoft:'#5F6670', accent:'#3D4A5C'},
+    dark: {bg:'#16181C', surface:'#1F2227', surface2:'#292D33', line:'#363B43', ink:'#E8EAED', inkSoft:'#A0A7B1', accent:'#AAB8CC'}}
+};
+const STATUS_COLORS = {
+  light:{good:'#2F7D5E', goodSoft:'#DDF0E6', caution:'#9A620A', cautionSoft:'#F7E9CC', avoid:'#B23A55', avoidSoft:'#F6DCE2'},
+  dark: {good:'#6BC9A0', goodSoft:'#1F3A30', caution:'#E3B25A', cautionSoft:'#3E3220', avoid:'#F08AA2', avoidSoft:'#45232D'}
+};
+const LOOK_DEFAULT = {theme:'lavender', mode:'auto', accent:'', bg:'', text:'standard', headings:'serif'};
+let look = (() => { try{ return Object.assign({}, LOOK_DEFAULT, JSON.parse(localStorage.getItem(LS_LOOK) || '{}')); }catch(e){ return {...LOOK_DEFAULT}; } })();
+if(!THEMES[look.theme]) look.theme = 'lavender';
+
+function luminance(hex){
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex || ''); if(!m) return 1;
+  const c = [0,2,4].map(i => parseInt(m[1].slice(i,i+2),16)/255).map(v => v <= .03928 ? v/12.92 : Math.pow((v+.055)/1.055, 2.4));
+  return .2126*c[0] + .7152*c[1] + .0722*c[2];
+}
+function themeVars(dark){
+  const b = THEMES[look.theme][dark ? 'dark' : 'light'], st = STATUS_COLORS[dark ? 'dark' : 'light'];
+  const accent = look.accent || b.accent;
+  return `--bg:${look.bg || b.bg};--surface:${b.surface};--surface-2:${b.surface2};--line:${b.line};--ink:${b.ink};--ink-soft:${b.inkSoft};
+    --violet:${accent};--violet-soft:color-mix(in srgb, ${accent} 20%, ${b.surface});--on-violet:${(luminance(accent)+.05)/.06 > 1.05/(luminance(accent)+.05) ? '#1C1726' : '#FFFFFF'};
+    --good:${st.good};--good-soft:${st.goodSoft};--caution:${st.caution};--caution-soft:${st.cautionSoft};--avoid:${st.avoid};--avoid-soft:${st.avoidSoft};
+    color-scheme:${dark ? 'dark' : 'light'};`;
+}
+function applyLook(){
+  let css;
+  if(look.bg){
+    css = `:root{${themeVars(luminance(look.bg) < .2)}}`;   // a custom background decides light or dark text
+  } else if(look.mode === 'light'){
+    css = `:root{${themeVars(false)}}`;
+  } else if(look.mode === 'dark'){
+    css = `:root{${themeVars(true)}}`;
+  } else {
+    css = `:root{${themeVars(false)}} @media (prefers-color-scheme: dark){:root{${themeVars(true)}}}`;
+  }
+  css += `html{font-size:${look.text === 'large' ? '112.5%' : '100%'}}`;
+  if(look.headings === 'modern') css += `:root{--serif:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif} h1,h2,h3,.wk,.stat .n,.kick-btn b{font-weight:700;letter-spacing:-.01em}`;
+  let el = document.getElementById('look-style');
+  if(!el){ el = document.createElement('style'); el.id = 'look-style'; document.head.appendChild(el); }
+  el.textContent = css;
+  const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+  document.querySelectorAll('meta[name="theme-color"]').forEach(m => { m.removeAttribute('media'); m.setAttribute('content', bg); });
+}
+function saveLook(){ try{ localStorage.setItem(LS_LOOK, JSON.stringify(look)); }catch(e){} applyLook(); }
+applyLook();
 const clone = o => JSON.parse(JSON.stringify(o));
 
 function freshMeta(){
@@ -1113,6 +1189,22 @@ function viewMore(){
       ${['synced','offline'].includes(sync.mode) ? `<button class="btn ghost" id="sync-now" type="button">Sync now</button>` : ''}
     </div>
 
+    <h2>Appearance</h2>
+    <div class="card form">
+      <p class="small muted">Saved on this phone only, so each phone can have its own look.</p>
+      <div class="swatches" role="group" aria-label="Color theme">${Object.entries(THEMES).map(([k,t]) => `<button class="sw" data-theme="${k}" aria-pressed="${look.theme===k}"><i style="background:linear-gradient(135deg, ${t.light.bg} 50%, ${t.light.accent} 50%)"></i>${t.label}</button>`).join('')}</div>
+      <div><p class="small muted">Light or dark</p>
+        <div class="seg-ctl tight" role="group" aria-label="Light or dark">${[['auto','Match phone'],['light','Light'],['dark','Dark']].map(([v,l]) => `<button data-lookmode="${v}" aria-pressed="${look.mode===v}">${l}</button>`).join('')}</div>
+        ${look.bg ? `<p class="small muted mt">Your custom background sets this automatically. Reset it to use this setting.</p>` : ''}</div>
+      <div class="color-row"><input type="color" id="look-accent" value="${look.accent || THEMES[look.theme].light.accent}" aria-label="Button color"><span>Button and highlight color</span>${look.accent ? `<button class="linkish" data-lookreset="accent">Reset</button>` : ''}</div>
+      <div class="color-row"><input type="color" id="look-bg" value="${look.bg || THEMES[look.theme].light.bg}" aria-label="Background color"><span>Background color</span>${look.bg ? `<button class="linkish" data-lookreset="bg">Reset</button>` : ''}</div>
+      <div><p class="small muted">Text size</p>
+        <div class="seg-ctl tight" role="group" aria-label="Text size">${[['standard','Standard'],['large','Large']].map(([v,l]) => `<button data-looktext="${v}" aria-pressed="${look.text===v}">${l}</button>`).join('')}</div></div>
+      <div><p class="small muted">Heading style</p>
+        <div class="seg-ctl tight" role="group" aria-label="Heading style">${[['serif','Classic'],['modern','Modern']].map(([v,l]) => `<button data-lookhead="${v}" aria-pressed="${look.headings===v}">${l}</button>`).join('')}</div></div>
+      <button class="btn ghost" data-lookreset="all" type="button">Reset to default look</button>
+    </div>
+
     <h2>Reminders</h2>
     <div class="card form">
       <p class="small muted">${permText}</p>
@@ -1199,6 +1291,11 @@ $('#app').addEventListener('click', async e => {
     if(done[ds.ms]) delete done[ds.ms]; else done[ds.ms] = todayKey();
     touchMeta(); render(); return;
   }
+  if(ds.theme){ look.theme = ds.theme; look.accent = ''; look.bg = ''; saveLook(); render(); return; }
+  if(ds.lookmode){ look.mode = ds.lookmode; saveLook(); render(); return; }
+  if(ds.looktext){ look.text = ds.looktext; saveLook(); render(); return; }
+  if(ds.lookhead){ look.headings = ds.lookhead; saveLook(); render(); return; }
+  if(ds.lookreset){ if(ds.lookreset === 'all') look = {...LOOK_DEFAULT}; else look[ds.lookreset] = ''; saveLook(); render(); return; }
   if(ds.msalllate){
     const late = (milestones() || []).filter(m => m.status === 'late'), tk = todayKey();
     late.forEach(m => state.meta.msDone[m.id] = tk);
@@ -1288,6 +1385,12 @@ $('#app').addEventListener('click', async e => {
   }
 });
 
+$('#app').addEventListener('input', e => {
+  if(e.target.id === 'look-accent' || e.target.id === 'look-bg'){
+    look[e.target.id === 'look-accent' ? 'accent' : 'bg'] = e.target.value; applyLook();
+  }
+});
+
 // Redraw only after leaving a settings field, so typing a date isn't interrupted.
 $('#app').addEventListener('focusout', e => {
   if(e.target.matches('[data-setting],[data-height]')) setTimeout(safeRender, 60);
@@ -1319,6 +1422,9 @@ $('#app').addEventListener('change', e => {
     if(!t) return;
     t[ds.f] = ds.f === 'target' ? Math.max(1, Math.min(30, Number(el.value)||1)) : el.value;
     touchMeta(); return;
+  }
+  if(el.id === 'look-accent' || el.id === 'look-bg'){
+    look[el.id === 'look-accent' ? 'accent' : 'bg'] = el.value; saveLook(); render(); return;
   }
   if(el.id === 's-import'){
     const file = el.files[0]; if(!file) return;
