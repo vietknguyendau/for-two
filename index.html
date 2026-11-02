@@ -591,7 +591,7 @@ function viewToday(){
     center = `<div class="wk">Week ${preg.week}</div>
       <div class="wk-sub">${preg.dayIn ? `and ${preg.dayIn} day${preg.dayIn>1?'s':''}, `:''}trimester ${preg.tri}<br>${preg.daysLeft > 0 ? `${preg.daysLeft} days to go` : preg.daysLeft === 0 ? 'Due today' : `${-preg.daysLeft} days past due`}</div>`;
   } else {
-    center = `<div class="wk">Today</div><button class="linkish" data-goto="more">Add your due date</button>`;
+    center = `<div class="wk">Today</div><button class="linkish" data-goto="more" data-focus="dueDate">Add your due date</button>`;
   }
   center += `<div class="done-line">${doneCount} of ${tasks.length} goals done</div>`;
 
@@ -1042,7 +1042,12 @@ $('#app').addEventListener('click', async e => {
   const el = e.target.closest('button,[data-goto]'); if(!el) return;
   const ds = el.dataset;
 
-  if(ds.goto){ tab = ds.goto; render(); window.scrollTo(0,0); return; }
+  if(ds.goto){
+    tab = ds.goto; render();
+    const f = ds.focus && document.querySelector(`[data-setting="${ds.focus}"]`);
+    if(f){ f.scrollIntoView({block:'center'}); f.focus({preventScroll:true}); } else window.scrollTo(0,0);
+    return;
+  }
   if(ds.act === 'tap') return tapTask(ds.id);
   if(ds.act === 'inc'){ bump(ds.id, 1); touchDay(); render({pop:ds.id}); return; }
   if(ds.act === 'dec'){ bump(ds.id, -1); touchDay(); render(); return; }
@@ -1145,6 +1150,11 @@ $('#app').addEventListener('click', async e => {
   }
 });
 
+// Redraw only after leaving a settings field, so typing a date isn't interrupted.
+$('#app').addEventListener('focusout', e => {
+  if(e.target.matches('[data-setting],[data-height]')) setTimeout(safeRender, 60);
+});
+
 $('#app').addEventListener('keydown', e => {
   if(e.key !== 'Enter') return;
   if(e.target.id === 'pin-in') document.getElementById('pin-go').click();
@@ -1156,14 +1166,13 @@ $('#app').addEventListener('change', e => {
   if(ds.setting){
     S()[ds.setting] = ['preWeight','baseCal','calOverride'].includes(ds.setting) ? (el.value === '' ? '' : Number(el.value)) : el.value.trim();
     touchMeta();
-    if(tab === 'body' || ds.setting === 'dueDate') render();
     return;
   }
   if(ds.height){
     const ft = Number(document.querySelector('[data-height="ft"]').value) || 0;
     const inch = Number(document.querySelector('[data-height="in"]').value) || 0;
     S().heightIn = ft ? ft*12 + inch : '';
-    touchMeta(); if(tab === 'body') render(); return;
+    touchMeta(); return;
   }
   if(ds.qtoggle){ const q = state.meta.questions.find(x => x.id === ds.qtoggle); if(q){ q.done = el.checked; touchMeta(); render(); } return; }
   if(el.id === 'feel-note'){ day().note = el.value; touchDay(); return; }
