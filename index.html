@@ -182,6 +182,20 @@ label.check-row input{width:20px;height:20px;accent-color:var(--violet)}
 .kick-btn:active{transform:scale(.97)}
 .kick-time{font-variant-numeric:tabular-nums;font-size:1.1rem;font-weight:600}
 
+/* Timeline */
+.ms-list{display:flex;flex-direction:column;gap:8px}
+.ms{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px}
+.ms-check{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--violet);background:none;display:grid;place-items:center;font-weight:700;color:#fff;padding:0}
+.ms.done .ms-check{background:var(--good);border-color:var(--good)}
+.ms.done .ms-title{text-decoration:line-through;color:var(--ink-soft)}
+.ms-body{flex:1;min-width:0}
+.ms-title{font-weight:600;display:block}
+.ms-when{font-size:.85rem;color:var(--ink-soft);display:block}
+.ms.late .ms-when{color:var(--caution);font-weight:600}
+.ms-note{font-size:.88rem;color:var(--ink-soft);margin-top:4px}
+.ms-act{margin-top:8px;min-height:38px;padding:8px 12px;font-size:.9rem}
+.sub{font-weight:600;margin:16px 0 8px;color:var(--ink-soft)}
+
 /* Goal editing */
 .goal-edit{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:8px}
 
@@ -291,6 +305,32 @@ const URGENT = [
 
 // IOM gain ranges (lb) by pre-pregnancy BMI, singleton pregnancy.
 const GAIN = {under:[28,40], normal:[25,35], over:[15,25], obese:[11,20]};
+
+// Pregnancy timeline. start/end are weeks of pregnancy. Based on ACOG and CDC schedules.
+const MILESTONES = [
+  {id:'firstvisit', start:6,  end:10, title:'First prenatal visit', note:'Confirms the due date and includes first blood work, which also tells you your blood type.'},
+  {id:'genetic',    start:10, end:13, title:'Ask about genetic screening', note:'Cell-free DNA blood screening is available from 10 weeks. It’s optional.'},
+  {id:'nt',         start:11, end:14, title:'Nuchal translucency ultrasound', note:'Often offered with first-trimester screening. Also optional.'},
+  {id:'dental',     start:12, end:24, title:'Dental cleaning', note:'Safe and recommended. Gum problems are more common during pregnancy.'},
+  {id:'leave',      start:14, end:24, title:'Plan parental leave', note:'Check your employer’s policy and Minnesota Paid Leave, and note any notice deadlines.'},
+  {id:'registry',   start:16, end:26, title:'Start a baby registry', note:''},
+  {id:'anatomy',    start:18, end:22, title:'Anatomy scan', note:'A detailed ultrasound of the baby’s growth and organs. You can learn the sex here if you want to.'},
+  {id:'classes',    start:20, end:30, title:'Book childbirth and breastfeeding classes', note:'Classes fill up, so booking early helps.'},
+  {id:'glucose',    start:24, end:28, title:'Glucose screening test', note:'Checks for gestational diabetes. Ask whether you need to fast beforehand.'},
+  {id:'tdap',       start:27, end:36, title:'Tdap vaccine', note:'Recommended in every pregnancy, ideally early in this window. It passes whooping cough protection to the baby.'},
+  {id:'rh',         start:27, end:29, title:'Rh shot, if you’re Rh-negative', note:'Your early blood work tells you whether this applies.'},
+  {id:'kickstart',  start:28, end:30, title:'Start daily kick counts', note:'Use the kick counter on the Body tab once a day, at a time the baby is usually active.', action:'kicks'},
+  {id:'pediatrician',start:28,end:34, title:'Choose a pediatrician', note:'Many offices offer free meet-and-greets for expecting parents.'},
+  {id:'prereg',     start:28, end:34, title:'Pre-register at the hospital', note:'Saves paperwork on the big day. Ask about a tour while you’re at it.'},
+  {id:'birthplan',  start:30, end:36, title:'Talk through a birth plan with your OB', note:'Pain relief preferences, support people and what matters most to you.'},
+  {id:'rsv',        start:32, end:36, title:'RSV vaccine', note:'Given September through January. The other option is an RSV antibody shot for the baby after birth, so ask which your OB recommends.', cond:'rsv'},
+  {id:'bag',        start:32, end:36, title:'Pack the hospital bag', note:''},
+  {id:'carseat',    start:33, end:36, title:'Install the car seat', note:'Certified car seat technicians will check the install for free in many areas.'},
+  {id:'meals',      start:34, end:38, title:'Stock the freezer with easy meals', note:''},
+  {id:'gbs',        start:36, end:37, title:'Group B strep test', note:'A quick swab. If it’s positive, you get antibiotics during labor.'},
+  {id:'golist',     start:36, end:38, title:'Know when to call and when to go in', note:'Ask your OB about contraction timing, what to do if your water breaks, and plan the route to the hospital.'},
+  {id:'flu',        start:0,  end:40, title:'Flu shot', note:'Safe in any trimester and recommended during flu season.', cond:'flu'}
+];
 const CAT_LABEL = {under:'underweight', normal:'normal', over:'overweight', obese:'obese'};
 
 /* ==================================================================
@@ -302,14 +342,14 @@ const clone = o => JSON.parse(JSON.stringify(o));
 function freshMeta(){
   return {
     settings:{name:'Christina', dueDate:'', heightIn:'', preWeight:'', baseCal:2000, calOverride:''},
-    tasks:clone(DEFAULT_TASKS), favorites:[], weights:[], appts:[], questions:[], kicks:[], kickSession:null, updatedAt:0
+    tasks:clone(DEFAULT_TASKS), favorites:[], weights:[], appts:[], questions:[], kicks:[], kickSession:null, msDone:{}, msCustom:[], updatedAt:0
   };
 }
 function normalizeMeta(m){
   const f = freshMeta();
   m = m && typeof m === 'object' ? m : {};
   return Object.assign(f, m, {settings:Object.assign(f.settings, m.settings || {})},
-    ...['tasks','favorites','weights','appts','questions','kicks'].map(k => ({[k]: Array.isArray(m[k]) ? m[k] : f[k]})));
+    ...['tasks','favorites','weights','appts','questions','kicks','msCustom'].map(k => ({[k]: Array.isArray(m[k]) ? m[k] : f[k]})));
 }
 function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
 function lsSet(k,v){ try{ localStorage.setItem(k,v); return true; }catch(e){ return false; } }
@@ -477,6 +517,49 @@ function gainRange(week, cat){
   return [1.1 + (lo-1.1)*f, 4.4 + (hi-4.4)*f];
 }
 
+function weekStartDate(week){
+  const d = parseKey(S().dueDate); d.setDate(d.getDate() - (280 - week*7)); return d;
+}
+function msCond(c){
+  if(c === 'flu') return [8,9,10,11,0,1,2].includes(new Date().getMonth());
+  if(c === 'rsv'){
+    const d = weekStartDate(32);
+    for(let i=0; i<35; i++){ if([8,9,10,11,0].includes(d.getMonth())) return true; d.setDate(d.getDate()+1); }
+    return false;
+  }
+  return true;
+}
+function milestones(){
+  const p = pregnancy();
+  if(!p || p.invalid) return null;
+  const wk = p.week, done = state.meta.msDone || {};
+  const custom = state.meta.msCustom.map(c => ({id:c.id, title:c.title, start:c.week, end:c.week+1, note:'', custom:true}));
+  return [...MILESTONES.filter(m => !m.cond || msCond(m.cond)), ...custom].map(m => ({...m,
+    status: done[m.id] ? 'done' : wk > m.end ? 'late' : wk >= m.start ? 'now' : m.start - wk <= 4 ? 'soon' : 'later'
+  })).sort((a,b) => a.start - b.start || a.end - b.end);
+}
+function msWhen(m){
+  const opts = {month:'short', day:'numeric'};
+  const a = weekStartDate(m.start), b = weekStartDate(m.end); b.setDate(b.getDate()+6);
+  const weeks = m.id === 'flu' ? 'Any trimester' : m.start === m.end ? `Week ${m.start}` : `Weeks ${m.start}–${m.end}`;
+  if(m.id === 'flu' && m.status !== 'done') return `${weeks} · during flu season`;
+  if(m.status === 'done') return `${weeks} · done ${fmtDate(state.meta.msDone[m.id], opts)}`;
+  if(m.status === 'late') return `${weeks} · past the usual window`;
+  return `${weeks} · ${a.toLocaleDateString(undefined,opts)} – ${b.toLocaleDateString(undefined,opts)}`;
+}
+function msItem(m, withNote){
+  const hasKick = state.meta.tasks.some(t => t.id === 'kicks');
+  return `<div class="ms ${m.status}">
+    <button class="ms-check" data-ms="${esc(m.id)}" aria-pressed="${m.status==='done'}" aria-label="Mark ${esc(m.title)} ${m.status==='done'?'not done':'done'}">${m.status==='done'?'✓':''}</button>
+    <div class="ms-body"><span class="ms-title">${esc(m.title)}</span><span class="ms-when">${msWhen(m)}</span>
+      ${withNote && m.note ? `<p class="ms-note">${esc(m.note)}</p>` : ''}
+      ${withNote && m.status==='late' && !m.custom ? `<p class="ms-note">If this hasn’t happened yet, ask at your next visit.</p>` : ''}
+      ${withNote && m.action==='kicks' && !hasKick && m.status!=='done' ? `<button class="btn ghost ms-act" data-addkick="1" type="button">Add kick count as a daily goal</button>` : ''}
+    </div>
+    ${m.custom ? `<button class="x" data-msdel="${esc(m.id)}" aria-label="Delete ${esc(m.title)}">×</button>` : ''}
+  </div>`;
+}
+
 /* ==================================================================
    Toast
 ================================================================== */
@@ -533,6 +616,7 @@ function addLog(item, minutes){
 function finishKicks(saveIt){
   const ks = state.meta.kickSession; if(!ks) return;
   state.meta.kickSession = null;
+  if(saveIt && ks.count > 0 && state.meta.tasks.some(t => t.id === 'kicks')){ day().done.kicks = 1; touchDay(); }
   if(saveIt && ks.count > 0){
     state.meta.kicks.unshift({id:uid(), start:ks.start, end:Date.now(), count:ks.count});
     state.meta.kicks = state.meta.kicks.slice(0, 60);
@@ -582,6 +666,32 @@ function nextAppt(){
 /* ==================================================================
    Today
 ================================================================== */
+function todoHTML(){
+  const ms = milestones();
+  if(!ms) return '';
+  const wk = pregnancy().week;
+  const now = ms.filter(m => m.status === 'now' || (m.status === 'late' && wk - m.end <= 2));
+  const soon = ms.find(m => m.status === 'soon');
+  if(!now.length && !soon) return '';
+  return `<div class="card mt"><div class="top"><h3>For this stage</h3><button class="linkish" data-goto="more" data-focus="timeline">Full timeline</button></div>
+    <div class="ms-list mt">${now.slice(0,4).map(m => msItem(m, false)).join('')}</div>
+    ${!now.length && soon ? `<p class="small muted">Nothing due right now. Next up: ${esc(soon.title)}, week ${soon.start}.</p>` : ''}
+    ${now.length > 4 ? `<p class="small muted mt">${now.length-4} more in the full timeline.</p>` : ''}</div>`;
+}
+function viewTimeline(){
+  const ms = milestones();
+  if(!ms) return `<h2 id="timeline">Pregnancy timeline</h2><div class="empty">Add your due date below to see what’s coming up week by week.</div>`;
+  const groups = [['now','Now'],['late','Past the usual window'],['soon','In the next 4 weeks'],['later','Later'],['done','Done']];
+  return `<h2 id="timeline">Pregnancy timeline</h2>
+    ${groups.map(([st,label]) => { const g = ms.filter(m => m.status === st); return g.length ? `<p class="sub">${label}</p>${st==='late' && g.length > 1 ? `<button class="btn ghost ms-act" data-msalllate="1" type="button" style="margin:0 0 8px">Mark all ${g.length} as done</button>`:''}<div class="ms-list">${g.map(m => msItem(m, st !== 'done')).join('')}</div>` : ''; }).join('')}
+    <div class="card form mt">
+      <h3>Add your own</h3>
+      <div class="row"><input type="text" id="ms-title" placeholder="e.g. Baby shower, paint the nursery" aria-label="Milestone" style="flex:3">
+        <input type="number" id="ms-week" min="1" max="42" inputmode="numeric" placeholder="Week" aria-label="Week of pregnancy"></div>
+      <button class="btn" id="ms-add" type="button">Add to timeline</button>
+    </div>`;
+}
+
 function viewToday(){
   const preg = pregnancy();
   const tasks = state.meta.tasks;
@@ -636,7 +746,7 @@ function viewToday(){
       <span class="date">${new Date().toLocaleDateString(undefined,{weekday:'long', month:'short', day:'numeric'})}</span></header>
     ${urgentBanner()}
     <div class="ring-wrap">${ringSVG()}<div class="ring-center"><div>${center}</div></div></div>
-    ${nextHTML}${apptHTML}${calHTML}
+    ${nextHTML}${apptHTML}${todoHTML()}${calHTML}
     <h2>Daily goals</h2>
     <div class="tasks">${tasksHTML || `<div class="empty">No goals yet. Add some in More.</div>`}</div>`;
 }
@@ -869,6 +979,13 @@ function insightsWeek(days){
   days.forEach(d => (state.days[keyOf(d)]?.symptoms || []).forEach(s => counts[s] = (counts[s]||0)+1));
   const top = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,3);
   if(top.length) notes.push(['info','📝',`<b>Most logged this week:</b> ${top.map(([s,n]) => `${esc(s.toLowerCase())} (${n} day${n>1?'s':''})`).join(', ')}. Good to bring up at your next visit.`]);
+  // Timeline
+  const ms = milestones();
+  if(ms){
+    const now = ms.filter(m => m.status === 'now'), late = ms.filter(m => m.status === 'late');
+    if(now.length) notes.push(['info','🗓️',`<b>${now.length} thing${now.length>1?'s':''} on the timeline for this stage:</b> ${esc(now.slice(0,3).map(m => m.title).join(', '))}${now.length>3?' and more':''}.`]);
+    if(late.length) notes.push(['watch','🗓️',`<b>${late.length} timeline item${late.length>1?'s are':' is'} past the usual window.</b> If they’ve happened, check them off in More. If not, ask at your next visit.`]);
+  }
   // Kicks
   const k = state.meta.kicks[0];
   if(k && Date.now() - k.start < 7*86400000) notes.push(['info','👣',`<b>Last kick count:</b> ${k.count} movements in ${fmtDur(k.end-k.start)}.`]);
@@ -956,6 +1073,7 @@ function viewMore(){
     </div>`).join('');
 
   return `${pinGate()}<header class="top"><h1>More</h1></header>
+    ${viewTimeline()}
 
     <h2>Appointments</h2>
     ${upcoming.length ? `<ul class="list">${upcoming.map(a => apptLi(a)).join('')}</ul>` : `<div class="empty">No upcoming appointments.</div>`}
@@ -1044,7 +1162,7 @@ $('#app').addEventListener('click', async e => {
 
   if(ds.goto){
     tab = ds.goto; render();
-    const f = ds.focus && document.querySelector(`[data-setting="${ds.focus}"]`);
+    const f = ds.focus && (document.getElementById(ds.focus) || document.querySelector(`[data-setting="${ds.focus}"]`));
     if(f){ f.scrollIntoView({block:'center'}); f.focus({preventScroll:true}); } else window.scrollTo(0,0);
     return;
   }
@@ -1076,6 +1194,21 @@ $('#app').addEventListener('click', async e => {
   if(ds.adel){ const i = state.meta.appts.findIndex(a => a.id === ds.adel); if(i>-1){ const [g] = state.meta.appts.splice(i,1); touchMeta(); render(); toast(`Removed ${g.title}`, () => { state.meta.appts.push(g); touchMeta(); }); } return; }
   if(ds.qdel){ state.meta.questions = state.meta.questions.filter(q => q.id !== ds.qdel); touchMeta(); render(); return; }
   if(ds.fdel){ state.meta.favorites = state.meta.favorites.filter(f => f.id !== ds.fdel); touchMeta(); render(); return; }
+  if(ds.ms){
+    const done = state.meta.msDone;
+    if(done[ds.ms]) delete done[ds.ms]; else done[ds.ms] = todayKey();
+    touchMeta(); render(); return;
+  }
+  if(ds.msalllate){
+    const late = (milestones() || []).filter(m => m.status === 'late'), tk = todayKey();
+    late.forEach(m => state.meta.msDone[m.id] = tk);
+    touchMeta(); render(); toast(`Marked ${late.length} earlier items done`, () => { late.forEach(m => delete state.meta.msDone[m.id]); touchMeta(); }); return;
+  }
+  if(ds.msdel){ state.meta.msCustom = state.meta.msCustom.filter(c => c.id !== ds.msdel); delete state.meta.msDone[ds.msdel]; touchMeta(); render(); return; }
+  if(ds.addkick){
+    if(!state.meta.tasks.some(t => t.id === 'kicks')) state.meta.tasks.push({id:'kicks', name:'Kick count', icon:'👣', target:1, unit:'', time:'19:00'});
+    touchMeta(); render(); toast('Kick count added to daily goals. Saving a count checks it off.'); return;
+  }
   if(ds.rm !== undefined){
     const i = Number(ds.rm), [gone] = state.meta.tasks.splice(i,1);
     touchMeta(); render(); toast(`Removed ${gone.name}`, () => { state.meta.tasks.splice(i,0,gone); touchMeta(); }); return;
@@ -1117,6 +1250,11 @@ $('#app').addEventListener('click', async e => {
       if(!title || !date){ toast('Add a name and date'); return; }
       state.meta.appts.push({id:uid(), title, date, time:val('a-time'), notes:val('a-notes')});
       touchMeta(); render(); toast(`Added ${title}`); return;
+    }
+    case 'ms-add': {
+      const title = val('ms-title'), week = Math.round(Number(val('ms-week')));
+      if(!title || !(week >= 1 && week <= 42)){ toast('Add a name and a week from 1 to 42'); return; }
+      state.meta.msCustom.push({id:'c-'+uid(), title, week}); touchMeta(); render(); toast(`Added ${title} at week ${week}`); return;
     }
     case 'q-add': {
       const text = val('q-text'); if(!text) return;
