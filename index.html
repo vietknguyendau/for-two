@@ -46,41 +46,44 @@
 *,*::before,*::after{box-sizing:inherit}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
-button,input,select{font:inherit;color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:3px solid var(--violet);outline-offset:2px;border-radius:8px}
-.app{max-width:560px;margin:0 auto;padding:20px 18px 110px}
+.app{max-width:560px;margin:0 auto;padding:20px 18px 120px}
 h1,h2,h3{font-family:var(--serif);font-weight:400;margin:0;line-height:1.2}
 h2{font-size:1.5rem;margin:28px 0 12px}
 h3{font-size:1.15rem}
 .muted{color:var(--ink-soft)}
 .small{font-size:.875rem}
+p{margin:0}
 
-/* Header */
 .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
 .top h1{font-size:1.75rem}
 .date{color:var(--ink-soft);font-size:.95rem}
 
-/* The day ring — the one bold moment */
+/* Day ring */
 .ring-wrap{display:grid;place-items:center;margin:18px 0 6px;position:relative}
 .ring{width:min(280px,78vw);height:auto;display:block}
 .ring .seg-bg{stroke:var(--surface-2)}
-.ring .seg{stroke:var(--violet);transition:stroke-dasharray .45s ease}
+.ring .seg{stroke:var(--violet)}
 .ring .seg.full{stroke:var(--good)}
 .ring-center{position:absolute;inset:0;display:grid;place-items:center;text-align:center;pointer-events:none}
 .ring-center .wk{font-family:var(--serif);font-size:clamp(2.4rem,11vw,3.4rem);line-height:1}
 .ring-center .wk-sub{color:var(--ink-soft);font-size:.9rem;margin-top:6px}
 .ring-center .done-line{margin-top:10px;font-weight:600;font-size:.95rem}
-.set-due{pointer-events:auto;background:none;border:0;color:var(--violet);font-weight:600;text-decoration:underline;text-underline-offset:3px;padding:4px}
+.linkish{pointer-events:auto;background:none;border:0;color:var(--violet);font-weight:600;text-decoration:underline;text-underline-offset:3px;padding:4px}
 
-.next{background:var(--violet-soft);border-radius:14px;padding:12px 14px;margin:14px 0 4px;display:flex;gap:10px;align-items:center}
+.next{background:var(--violet-soft);border-radius:14px;padding:12px 14px;margin:12px 0 0;display:flex;gap:10px;align-items:center}
 .next strong{font-weight:600}
+.urgent{background:var(--avoid-soft);color:var(--ink);border:1px solid color-mix(in srgb,var(--avoid) 45%,transparent);border-radius:14px;padding:14px;margin:14px 0 0}
+.urgent strong{color:var(--avoid)}
+.urgent a{color:var(--avoid);font-weight:700}
 
 /* Tasks */
 .tasks{display:flex;flex-direction:column;gap:10px;margin-top:8px}
 .task{display:flex;align-items:stretch;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
 .task-main{flex:1;display:flex;align-items:center;gap:14px;background:none;border:0;padding:14px;text-align:left;min-height:64px}
-.check{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:1.25rem;background:var(--surface-2);transition:background .2s,transform .2s}
+.check{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:1.25rem;background:var(--surface-2);transition:background .2s}
 .task.done .check{background:var(--good);color:#fff}
 .task.done .t-name{color:var(--ink-soft);text-decoration:line-through;text-decoration-thickness:1px}
 .t-name{font-weight:600;display:block}
@@ -92,52 +95,58 @@ h3{font-size:1.15rem}
 .stepper button{width:52px;border:0;background:none;font-size:1.4rem;font-weight:500}
 .stepper button+button{border-left:1px solid var(--line);background:var(--violet-soft);color:var(--violet);font-weight:700}
 
-/* Segmented control & chips */
+/* Controls */
 .seg-ctl{display:flex;background:var(--surface-2);border-radius:12px;padding:4px;gap:4px;margin:16px 0}
-.seg-ctl button{flex:1;border:0;background:none;padding:10px;border-radius:9px;font-weight:600;color:var(--ink-soft)}
+.seg-ctl button{flex:1;border:0;background:none;padding:10px 6px;border-radius:9px;font-weight:600;color:var(--ink-soft);font-size:.95rem}
 .seg-ctl button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(43,35,64,.12)}
 .group{margin:18px 0 6px}
 .group-head{display:flex;align-items:center;gap:8px;font-weight:600;margin-bottom:8px}
 .dot{width:10px;height:10px;border-radius:50%;flex:none}
-.dot.good{background:var(--good)} .dot.caution{background:var(--caution)} .dot.avoid{background:var(--avoid)}
+.dot.good{background:var(--good)} .dot.caution{background:var(--caution)} .dot.avoid{background:var(--avoid)} .dot.fav{background:var(--violet)}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 14px;font-size:.95rem;min-height:42px}
+.chip small{color:var(--ink-soft);margin-left:4px}
 .chip.good{border-color:color-mix(in srgb,var(--good) 40%,var(--line))}
 .chip.caution{border-color:color-mix(in srgb,var(--caution) 45%,var(--line))}
 .chip.avoid{border-color:color-mix(in srgb,var(--avoid) 40%,var(--line))}
 .chip:active{transform:scale(.97)}
 .chip[aria-pressed="true"]{background:var(--violet);color:var(--on-violet);border-color:var(--violet)}
+.chip[aria-pressed="true"] small{color:inherit}
+.chip.urg[aria-pressed="true"]{background:var(--avoid);border-color:var(--avoid);color:#fff}
 
-.custom{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:18px;display:grid;gap:10px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.form{display:grid;gap:10px}
 .row{display:flex;gap:8px;flex-wrap:wrap}
 .row>*{flex:1;min-width:0}
-input[type=text],input[type=number],input[type=date],input[type=time],select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+input[type=text],input[type=number],input[type=date],input[type=time],input[type=password],select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+textarea{min-height:84px;resize:vertical}
 label.field{display:grid;gap:4px;font-size:.875rem;color:var(--ink-soft)}
-.btn{border:0;border-radius:12px;padding:12px 16px;font-weight:600;background:var(--violet);color:var(--on-violet);min-height:46px}
+label.check-row{display:flex;gap:10px;align-items:center;font-size:.95rem}
+label.check-row input{width:20px;height:20px;accent-color:var(--violet)}
+.btn{border:0;border-radius:12px;padding:12px 16px;font-weight:600;background:var(--violet);color:var(--on-violet);min-height:46px;text-align:center}
 .btn.ghost{background:var(--surface-2);color:var(--ink)}
 .btn.danger{background:var(--avoid-soft);color:var(--avoid)}
 
-/* Log list */
-.log{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
-.log li{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
-.log .when{font-size:.8rem;color:var(--ink-soft);width:62px;flex:none}
-.log .what{flex:1;min-width:0}
-.log .what span{display:block;font-size:.85rem;color:var(--ink-soft)}
+/* Lists */
+.list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.list li{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.list .when{font-size:.8rem;color:var(--ink-soft);width:62px;flex:none}
+.list .what{flex:1;min-width:0;background:none;border:0;text-align:left;padding:0}
+.list .what span{display:block;font-size:.85rem;color:var(--ink-soft)}
+.list li.past{opacity:.6}
 .badge{font-size:.75rem;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap}
 .badge.good{background:var(--good-soft);color:var(--good)}
 .badge.caution{background:var(--caution-soft);color:var(--caution)}
 .badge.avoid{background:var(--avoid-soft);color:var(--avoid)}
-.x{border:0;background:none;color:var(--ink-soft);font-size:1.3rem;width:36px;height:36px;border-radius:50%}
+.x{border:0;background:none;color:var(--ink-soft);font-size:1.3rem;width:36px;height:36px;border-radius:50%;flex:none}
 .empty{background:var(--surface);border:1px dashed var(--line);border-radius:14px;padding:16px;color:var(--ink-soft);text-align:center}
 
 /* Insights */
 .notes{display:flex;flex-direction:column;gap:8px}
 .note{border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start}
-.note.good{background:var(--good-soft)} .note.watch{background:var(--caution-soft)} .note.flag{background:var(--avoid-soft)}
+.note.good{background:var(--good-soft)} .note.watch{background:var(--caution-soft)} .note.flag{background:var(--avoid-soft)} .note.info{background:var(--surface-2)}
 .note .ic{font-size:1.1rem;line-height:1.4}
-.note p{margin:0}
 .note b{font-weight:600}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
 .bars{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:end;height:140px;margin-top:12px}
 .bar{display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
 .bar i{display:block;width:100%;max-width:34px;border-radius:8px 8px 4px 4px;background:var(--violet);min-height:4px}
@@ -147,19 +156,39 @@ label.field{display:grid;gap:4px;font-size:.875rem;color:var(--ink-soft)}
 .meter i{display:block;height:100%;background:var(--violet);border-radius:999px}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .stat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px}
-.stat .n{font-family:var(--serif);font-size:2rem;line-height:1.1}
+.stat .n{font-family:var(--serif);font-size:1.9rem;line-height:1.1}
 .disclaimer{font-size:.82rem;color:var(--ink-soft);margin-top:24px}
-
-/* Settings */
-.goal-edit{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:8px}
-.goal-edit .row input[type=text]{flex:3}
-.goal-edit .row .narrow{flex:1}
 .stack{display:flex;flex-direction:column;gap:10px}
+.mt{margin-top:10px}
+
+/* Mood */
+.moods{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.mood{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:10px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.78rem;font-weight:600;color:var(--ink-soft)}
+.mood span{font-size:1.6rem;line-height:1.2}
+.mood[aria-pressed="true"]{background:var(--violet-soft);border-color:var(--violet);color:var(--ink)}
+
+/* Weight chart */
+.chart{width:100%;height:auto;display:block;margin-top:10px}
+.chart .band{fill:var(--good-soft)}
+.chart .axis{stroke:var(--line)}
+.chart text{fill:var(--ink-soft);font-size:11px;font-family:var(--sans)}
+.chart .pt{fill:var(--violet)}
+.chart .ln{stroke:var(--violet);fill:none;stroke-width:2}
+
+/* Kick counter */
+.kick{display:grid;place-items:center;gap:12px;text-align:center}
+.kick-btn{width:min(220px,60vw);aspect-ratio:1;border-radius:50%;border:0;background:var(--violet);color:var(--on-violet);display:grid;place-items:center;align-content:center;gap:2px}
+.kick-btn b{font-family:var(--serif);font-weight:400;font-size:4rem;line-height:1}
+.kick-btn:active{transform:scale(.97)}
+.kick-time{font-variant-numeric:tabular-nums;font-size:1.1rem;font-weight:600}
+
+/* Goal editing */
+.goal-edit{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:8px}
 
 /* Nav */
 nav{position:fixed;left:0;right:0;bottom:0;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:10}
-nav .inner{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
-nav button{border:0;background:none;padding:10px 4px 12px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.78rem;font-weight:600;color:var(--ink-soft)}
+nav .inner{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+nav button{border:0;background:none;padding:10px 2px 12px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.74rem;font-weight:600;color:var(--ink-soft)}
 nav button svg{width:24px;height:24px}
 nav button[aria-current="page"]{color:var(--violet)}
 
@@ -178,19 +207,18 @@ nav button[aria-current="page"]{color:var(--violet)}
   <div class="inner">
     <button data-tab="today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M8.5 12.5l2.3 2.3 4.7-5"/></svg>Today</button>
     <button data-tab="log"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Log</button>
+    <button data-tab="body"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>Body</button>
     <button data-tab="insights"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 19V11M12 19V5M19 19v-6"/></svg>Insights</button>
-    <button data-tab="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/></svg>Settings</button>
+    <button data-tab="more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>More</button>
   </div>
 </nav>
 
 <div class="toast" id="toast" role="status"><span id="toast-msg"></span><button id="toast-undo" hidden>Undo</button></div>
 
 <script>
-/* ------------------------------------------------------------------
-   Data
-------------------------------------------------------------------- */
-const STORE_KEY = 'for-two-v1';
-
+/* ==================================================================
+   Reference data
+================================================================== */
 const DEFAULT_TASKS = [
   {id:'vitamin', name:'Prenatal vitamin',        icon:'💊', target:1,  unit:'',         time:'08:00'},
   {id:'water',   name:'Water',                   icon:'💧', target:10, unit:'cups',     time:''},
@@ -202,52 +230,48 @@ const DEFAULT_TASKS = [
   {id:'sleep',   name:'In bed by 10:30',         icon:'🌙', target:1,  unit:'',         time:'22:15'}
 ];
 
-// r = good | caution | avoid.  link = goal it counts toward.  caf = caffeine mg.
+// r: good | caution | avoid. link: goal it counts toward. cal: typical calories. caf: caffeine mg.
 const LIB = [
-  // Food & drink — good
-  {id:'water',   kind:'eat', r:'good', name:'Water',                  link:'water',   tip:'Most pregnant people need about 8–12 cups a day.'},
-  {id:'eggs',    kind:'eat', r:'good', name:'Eggs, fully cooked',     link:'protein', tip:'Protein and choline. Cook until the yolk is firm.'},
-  {id:'yogurt',  kind:'eat', r:'good', name:'Greek yogurt',           link:'protein', tip:'Protein and calcium.'},
-  {id:'salmon',  kind:'eat', r:'good', name:'Salmon, cooked',         link:'protein', tip:'Low-mercury omega-3s. Aim for 2–3 servings of low-mercury fish a week.'},
-  {id:'chicken', kind:'eat', r:'good', name:'Chicken or lean meat',   link:'protein', tip:'Protein and iron. Cook to a safe internal temperature.'},
-  {id:'beans',   kind:'eat', r:'good', name:'Beans or lentils',       link:'protein', tip:'Iron, folate and fiber in one.'},
-  {id:'greens',  kind:'eat', r:'good', name:'Leafy greens',           link:'produce', tip:'Folate, iron and fiber. Wash well.'},
-  {id:'berries', kind:'eat', r:'good', name:'Berries',                link:'produce', tip:'Vitamin C helps the body absorb iron.'},
-  {id:'fruit',   kind:'eat', r:'good', name:'Fruit',                  link:'produce', tip:'Fiber and fluids.'},
-  {id:'veg',     kind:'eat', r:'good', name:'Vegetables',             link:'produce', tip:'Fiber helps with pregnancy constipation.'},
-  {id:'smoothie',kind:'eat', r:'good', name:'Fruit and spinach smoothie', link:'produce', tip:'An easy way to stack fruit, greens and fluids.'},
-  {id:'grains',  kind:'eat', r:'good', name:'Whole grains',           tip:'Steady energy and fiber.'},
-  {id:'milk',    kind:'eat', r:'good', name:'Milk, pasteurized',      tip:'Calcium and vitamin D.'},
-  {id:'nuts',    kind:'eat', r:'good', name:'Nuts or seeds',          tip:'Healthy fats and magnesium.'},
-  // In moderation
-  {id:'coffee',  kind:'eat', r:'caution', name:'Coffee, 8 oz',        caf:95, tip:'About 95 mg caffeine. The usual guidance is under 200 mg a day.'},
-  {id:'tea',     kind:'eat', r:'caution', name:'Black or green tea',  caf:40, tip:'About 30–50 mg caffeine a cup.'},
-  {id:'cola',    kind:'eat', r:'caution', name:'Cola',                caf:35, tip:'Caffeine plus added sugar.'},
-  {id:'choc',    kind:'eat', r:'caution', name:'Chocolate',           caf:15, tip:'A little caffeine. Fine in moderation.'},
-  {id:'deli',    kind:'eat', r:'caution', name:'Deli meat or hot dog',tip:'Listeria risk. Heat until steaming hot before eating.'},
-  {id:'tuna',    kind:'eat', r:'caution', name:'Canned light tuna',   link:'protein', tip:'Low mercury, but it counts toward the 2–3 fish servings a week. Limit albacore to 1 serving a week.'},
-  {id:'sweets',  kind:'eat', r:'caution', name:'Sweets or dessert',   tip:'Fine sometimes. Keeping added sugar modest helps energy and glucose levels.'},
-  {id:'fast',    kind:'eat', r:'caution', name:'Fast food',           tip:'Often high in sodium, which can add to swelling.'},
-  // Best avoided
-  {id:'alcohol', kind:'eat', r:'avoid', name:'Alcohol',               tip:'No amount of alcohol is known to be safe during pregnancy.'},
-  {id:'raw',     kind:'eat', r:'avoid', name:'Raw fish or sushi',     tip:'Parasite and bacteria risk. Cooked and veggie rolls are fine.'},
-  {id:'unpast',  kind:'eat', r:'avoid', name:'Unpasteurized cheese or milk', tip:'Listeria risk. Check labels on brie, feta, blue cheese and queso fresco.'},
-  {id:'mercury', kind:'eat', r:'avoid', name:'High-mercury fish',     tip:'Shark, swordfish, king mackerel, tilefish, bigeye tuna, marlin and orange roughy.'},
-  {id:'rawmeat', kind:'eat', r:'avoid', name:'Undercooked meat or eggs', tip:'Salmonella and toxoplasma risk. Includes rare steak and runny yolks.'},
-  {id:'sprouts', kind:'eat', r:'avoid', name:'Raw sprouts',           tip:'Linked to E. coli and salmonella. Cooked sprouts are fine.'},
-  {id:'energy',  kind:'eat', r:'avoid', name:'Energy drink',          caf:160, tip:'High caffeine plus stimulants that haven’t been studied in pregnancy.'},
-  // Movement
-  {id:'walk',    kind:'move', r:'good', name:'Walk',                  tip:'One of the best all-around options.'},
-  {id:'pyoga',   kind:'move', r:'good', name:'Prenatal yoga',         tip:'Flexibility, breathing and stress relief.'},
-  {id:'swim',    kind:'move', r:'good', name:'Swimming',              tip:'Takes pressure off joints, especially later on.'},
-  {id:'bike',    kind:'move', r:'good', name:'Stationary bike',       tip:'Cardio without the fall risk of road cycling.'},
-  {id:'lift',    kind:'move', r:'good', name:'Light strength training', tip:'Keep the weights moderate and avoid straining or holding your breath.'},
-  {id:'pilates', kind:'move', r:'good', name:'Prenatal Pilates',      tip:'Core and pelvic floor support.'},
-  {id:'stretch', kind:'move', r:'good', name:'Stretching',            tip:'Helps with back and hip tightness.'},
-  {id:'hard',    kind:'move', r:'caution', name:'Intense cardio',     tip:'Usually fine if it was routine before pregnancy and the OB agrees. Use the talk test.'},
+  {id:'water',   kind:'eat', r:'good', name:'Water',                  cal:0,   link:'water',   tip:'Most pregnant people need about 8–12 cups a day.'},
+  {id:'eggs',    kind:'eat', r:'good', name:'2 eggs, fully cooked',   cal:140, link:'protein', tip:'Protein and choline. Cook until the yolk is firm.'},
+  {id:'yogurt',  kind:'eat', r:'good', name:'Greek yogurt, 1 cup',    cal:150, link:'protein', tip:'Protein and calcium.'},
+  {id:'salmon',  kind:'eat', r:'good', name:'Salmon, 4 oz cooked',    cal:230, link:'protein', tip:'Low-mercury omega-3s. Aim for 2–3 servings of low-mercury fish a week.'},
+  {id:'chicken', kind:'eat', r:'good', name:'Chicken or lean meat, 4 oz', cal:190, link:'protein', tip:'Protein and iron. Cook to a safe internal temperature.'},
+  {id:'beans',   kind:'eat', r:'good', name:'Beans or lentils, 1 cup',cal:230, link:'protein', tip:'Iron, folate and fiber in one.'},
+  {id:'greens',  kind:'eat', r:'good', name:'Leafy greens',           cal:25,  link:'produce', tip:'Folate, iron and fiber. Wash well.'},
+  {id:'berries', kind:'eat', r:'good', name:'Berries, 1 cup',         cal:70,  link:'produce', tip:'Vitamin C helps the body absorb iron.'},
+  {id:'fruit',   kind:'eat', r:'good', name:'Piece of fruit',         cal:95,  link:'produce', tip:'Fiber and fluids.'},
+  {id:'veg',     kind:'eat', r:'good', name:'Vegetables, 1 cup',      cal:50,  link:'produce', tip:'Fiber helps with pregnancy constipation.'},
+  {id:'smoothie',kind:'eat', r:'good', name:'Fruit and spinach smoothie', cal:250, link:'produce', tip:'An easy way to stack fruit, greens and fluids.'},
+  {id:'grains',  kind:'eat', r:'good', name:'Whole grains, 1 cup',    cal:210, tip:'Steady energy and fiber.'},
+  {id:'milk',    kind:'eat', r:'good', name:'Milk, 1 cup',            cal:120, tip:'Calcium and vitamin D. Pasteurized only.'},
+  {id:'nuts',    kind:'eat', r:'good', name:'Nuts, small handful',    cal:170, tip:'Healthy fats and magnesium.'},
+  {id:'coffee',  kind:'eat', r:'caution', name:'Coffee, 8 oz',        cal:5,   caf:95,  tip:'About 95 mg caffeine. The usual guidance is under 200 mg a day.'},
+  {id:'tea',     kind:'eat', r:'caution', name:'Black or green tea',  cal:2,   caf:40,  tip:'About 30–50 mg caffeine a cup.'},
+  {id:'cola',    kind:'eat', r:'caution', name:'Cola, 12 oz',         cal:140, caf:35,  tip:'Caffeine plus added sugar.'},
+  {id:'choc',    kind:'eat', r:'caution', name:'Chocolate, 1 oz',     cal:150, caf:15,  tip:'A little caffeine. Fine in moderation.'},
+  {id:'deli',    kind:'eat', r:'caution', name:'Deli meat or hot dog',cal:150, tip:'Listeria risk. Heat until steaming hot before eating.'},
+  {id:'tuna',    kind:'eat', r:'caution', name:'Canned light tuna',   cal:110, link:'protein', tip:'Low mercury, but it counts toward the 2–3 fish servings a week. Limit albacore to 1 serving a week.'},
+  {id:'sweets',  kind:'eat', r:'caution', name:'Sweets or dessert',   cal:250, tip:'Fine sometimes. Keeping added sugar modest helps energy and glucose levels.'},
+  {id:'fast',    kind:'eat', r:'caution', name:'Fast food meal',      cal:700, tip:'Often high in sodium, which can add to swelling.'},
+  {id:'alcohol', kind:'eat', r:'avoid', name:'Alcohol',               cal:150, tip:'No amount of alcohol is known to be safe during pregnancy.'},
+  {id:'raw',     kind:'eat', r:'avoid', name:'Raw fish or sushi',     cal:300, tip:'Parasite and bacteria risk. Cooked and veggie rolls are fine.'},
+  {id:'unpast',  kind:'eat', r:'avoid', name:'Unpasteurized cheese or milk', cal:100, tip:'Listeria risk. Check labels on brie, feta, blue cheese and queso fresco.'},
+  {id:'mercury', kind:'eat', r:'avoid', name:'High-mercury fish',     cal:200, tip:'Shark, swordfish, king mackerel, tilefish, bigeye tuna, marlin and orange roughy.'},
+  {id:'rawmeat', kind:'eat', r:'avoid', name:'Undercooked meat or eggs', cal:200, tip:'Salmonella and toxoplasma risk. Includes rare steak and runny yolks.'},
+  {id:'sprouts', kind:'eat', r:'avoid', name:'Raw sprouts',           cal:10,  tip:'Linked to E. coli and salmonella. Cooked sprouts are fine.'},
+  {id:'energy',  kind:'eat', r:'avoid', name:'Energy drink',          cal:110, caf:160, tip:'High caffeine plus stimulants that haven’t been studied in pregnancy.'},
+  {id:'walk',    kind:'move', r:'good', name:'Walk'},
+  {id:'pyoga',   kind:'move', r:'good', name:'Prenatal yoga'},
+  {id:'swim',    kind:'move', r:'good', name:'Swimming'},
+  {id:'bike',    kind:'move', r:'good', name:'Stationary bike'},
+  {id:'lift',    kind:'move', r:'good', name:'Light strength training'},
+  {id:'pilates', kind:'move', r:'good', name:'Prenatal Pilates'},
+  {id:'stretch', kind:'move', r:'good', name:'Stretching'},
+  {id:'hard',    kind:'move', r:'caution', name:'Intense cardio', tip:'Usually fine if it was routine before pregnancy and the OB agrees. Use the talk test.'},
   {id:'hot',     kind:'move', r:'avoid', name:'Hot yoga or hot Pilates', tip:'Overheating is a concern, especially early in pregnancy.'},
   {id:'fall',    kind:'move', r:'avoid', name:'Skiing, snowboarding or riding', tip:'High fall risk. ACOG advises avoiding activities where falls are likely.'},
-  {id:'contact', kind:'move', r:'avoid', name:'Contact sports',       tip:'Risk of a blow to the abdomen.'}
+  {id:'contact', kind:'move', r:'avoid', name:'Contact sports', tip:'Risk of a blow to the abdomen.'}
 ];
 
 const RATING = {
@@ -255,42 +279,142 @@ const RATING = {
   move: {good:'Great for pregnancy', caution:'Check with OB', avoid:'Best avoided'}
 };
 
-/* ------------------------------------------------------------------
-   Storage
-------------------------------------------------------------------- */
-function freshState(){
-  return {settings:{name:'Christina', dueDate:''}, tasks:structuredClone(DEFAULT_TASKS), days:{}};
+const MOODS = [{v:1,e:'😣',l:'Rough'},{v:2,e:'😕',l:'Low'},{v:3,e:'😐',l:'Okay'},{v:4,e:'🙂',l:'Good'},{v:5,e:'😄',l:'Great'}];
+const SYMPTOMS = ['Nausea','Vomiting','Fatigue','Heartburn','Headache','Back pain','Swelling','Cramps','Constipation','Trouble sleeping','Dizziness','Mood swings','Cravings','Food aversions'];
+// Based on CDC "Hear Her" urgent maternal warning signs.
+const URGENT = [
+  'Vaginal bleeding','Leaking fluid','Severe headache that won’t go away','Vision changes',
+  'Sudden swelling of face or hands','Fever of 100.4°F or higher','Severe belly pain',
+  'Baby moving less','Can’t keep food or water down','Trouble breathing or chest pain',
+  'Thoughts of harming yourself or the baby'
+];
+
+// IOM gain ranges (lb) by pre-pregnancy BMI, singleton pregnancy.
+const GAIN = {under:[28,40], normal:[25,35], over:[15,25], obese:[11,20]};
+const CAT_LABEL = {under:'underweight', normal:'normal', over:'overweight', obese:'obese'};
+
+/* ==================================================================
+   State, storage and sync
+================================================================== */
+const LS = 'for-two-v2', LS_PENDING = 'for-two-pending', LS_PIN = 'for-two-pin', LS_V1 = 'for-two-v1';
+const clone = o => JSON.parse(JSON.stringify(o));
+
+function freshMeta(){
+  return {
+    settings:{name:'Christina', dueDate:'', heightIn:'', preWeight:'', baseCal:2000, calOverride:''},
+    tasks:clone(DEFAULT_TASKS), favorites:[], weights:[], appts:[], questions:[], kicks:[], kickSession:null, updatedAt:0
+  };
 }
+function normalizeMeta(m){
+  const f = freshMeta();
+  m = m && typeof m === 'object' ? m : {};
+  return Object.assign(f, m, {settings:Object.assign(f.settings, m.settings || {})},
+    ...['tasks','favorites','weights','appts','questions','kicks'].map(k => ({[k]: Array.isArray(m[k]) ? m[k] : f[k]})));
+}
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); return true; }catch(e){ return false; } }
+
 function load(){
   try{
-    const raw = localStorage.getItem(STORE_KEY);
-    if(!raw) return freshState();
-    const s = JSON.parse(raw);
-    if(!s || !Array.isArray(s.tasks) || typeof s.days !== 'object') return freshState();
-    s.settings = Object.assign({name:'Christina', dueDate:''}, s.settings || {});
-    return s;
-  }catch(e){ return freshState(); }
-}
-function save(){
-  try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
-  catch(e){ toast('Couldn’t save on this device. Try exporting a backup.'); }
+    const raw = lsGet(LS);
+    if(raw){ const s = JSON.parse(raw); return {meta:normalizeMeta(s.meta), days:s.days || {}}; }
+    const v1 = lsGet(LS_V1);
+    if(v1){
+      const o = JSON.parse(v1), meta = freshMeta();
+      Object.assign(meta.settings, o.settings || {});
+      if(Array.isArray(o.tasks)) meta.tasks = o.tasks;
+      return {meta, days:o.days || {}};
+    }
+  }catch(e){}
+  return {meta:freshMeta(), days:{}};
 }
 let state = load();
+let pending = (() => { try{ const p = JSON.parse(lsGet(LS_PENDING)); if(p) return {meta:!!p.meta, days:p.days || []}; }catch(e){} return {meta:false, days:[]}; })();
+let pin = lsGet(LS_PIN) || '';
+let sync = {mode:'checking', msg:'', last:0, pinTried:false};
 
-/* ------------------------------------------------------------------
+function persist(){
+  const ok = lsSet(LS, JSON.stringify(state));
+  lsSet(LS_PENDING, JSON.stringify(pending));
+  if(!ok) toast('This phone is out of storage space. Export a backup in More.');
+}
+function touchMeta(){ state.meta.updatedAt = Date.now(); pending.meta = true; persist(); schedulePush(); }
+function touchDay(k = todayKey()){
+  day(k).updatedAt = Date.now();
+  if(!pending.days.includes(k)) pending.days.push(k);
+  persist(); schedulePush();
+}
+
+async function api(method, body){
+  return fetch('/api/state', {
+    method, cache:'no-store',
+    headers:{'content-type':'application/json', 'x-app-pin':pin},
+    body: body ? JSON.stringify(body) : undefined
+  });
+}
+async function pull(){
+  if(location.protocol === 'file:'){ sync.mode = 'local'; return; }
+  try{
+    const r = await api('GET');
+    if(r.status === 404){ sync.mode = 'local'; safeRender(); return; }
+    const data = await r.json().catch(() => ({}));
+    if(r.status === 401){ sync.mode = 'needpin'; safeRender(); return; }
+    if(!r.ok){ sync.mode = 'error'; sync.msg = data.error || 'The server had a problem.'; safeRender(); return; }
+    sync.pinTried = false;
+    if(!data.meta){
+      // Empty database: upload everything on this phone.
+      sync.mode = 'synced'; pending.meta = true; pending.days = Object.keys(state.days); persist();
+      await push(); safeRender(); return;
+    }
+    const keep = new Set(pending.days);
+    if(!pending.meta) state.meta = normalizeMeta(data.meta);
+    for(const [k,v] of Object.entries(data.days || {})) if(!keep.has(k) && v) state.days[k] = v;
+    lsSet(LS, JSON.stringify(state));
+    sync.mode = 'synced'; sync.last = Date.now();
+    safeRender();
+    if(pending.meta || pending.days.length) push();
+  }catch(e){ sync.mode = 'offline'; safeRender(); }
+}
+let pushTimer, pushing = false;
+function schedulePush(){ clearTimeout(pushTimer); pushTimer = setTimeout(push, 1200); }
+async function push(){
+  if(!['synced','offline'].includes(sync.mode)) return;
+  if(!pending.meta && !pending.days.length) return;
+  if(pushing){ schedulePush(); return; }
+  pushing = true;
+  const sentAt = Date.now();
+  const body = {};
+  if(pending.meta) body.meta = state.meta;
+  if(pending.days.length) body.days = Object.fromEntries(pending.days.filter(k => state.days[k]).map(k => [k, state.days[k]]));
+  try{
+    const r = await api('POST', body);
+    if(r.status === 401){ sync.mode = 'needpin'; safeRender(); return; }
+    if(!r.ok) throw new Error();
+    pending.meta = pending.meta && state.meta.updatedAt >= sentAt;
+    pending.days = pending.days.filter(k => (state.days[k]?.updatedAt || 0) >= sentAt);
+    lsSet(LS_PENDING, JSON.stringify(pending));
+    sync.mode = 'synced'; sync.last = Date.now();
+  }catch(e){ sync.mode = 'offline'; }
+  finally{ pushing = false; }
+}
+
+/* ==================================================================
    Helpers
-------------------------------------------------------------------- */
+================================================================== */
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pad = n => String(n).padStart(2,'0');
 const keyOf = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 const todayKey = () => keyOf(new Date());
 const uid = () => Math.random().toString(36).slice(2,10);
+const num = n => Math.round(n).toLocaleString();
+const S = () => state.meta.settings;
 
+function parseKey(k){ const [y,m,d] = k.split('-').map(Number); return new Date(y, m-1, d); }
 function day(k = todayKey()){
-  if(!state.days[k]) state.days[k] = {done:{}, logs:[], notified:{}};
+  if(!state.days[k]) state.days[k] = {done:{}, logs:[], notified:{}, symptoms:[], urgent:[], mood:0, note:''};
   const d = state.days[k];
-  d.done ||= {}; d.logs ||= []; d.notified ||= {};
+  d.done ||= {}; d.logs ||= []; d.notified ||= {}; d.symptoms ||= []; d.urgent ||= [];
   return d;
 }
 function lastNDays(n){
@@ -303,41 +427,59 @@ function fmtTime(hhmm){
   const [h,m] = hhmm.split(':').map(Number);
   return `${((h+11)%12)+1}:${pad(m)} ${h<12?'AM':'PM'}`;
 }
-function fmtClock(ts){
-  const d = new Date(ts);
-  return fmtTime(`${pad(d.getHours())}:${pad(d.getMinutes())}`);
+function fmtClock(ts){ const d = new Date(ts); return fmtTime(`${pad(d.getHours())}:${pad(d.getMinutes())}`); }
+function fmtDate(k, opts = {weekday:'short', month:'short', day:'numeric'}){ return parseKey(k).toLocaleDateString(undefined, opts); }
+function fmtDur(ms){
+  const s = Math.max(0, Math.floor(ms/1000)), h = Math.floor(s/3600), m = Math.floor(s%3600/60), sec = s%60;
+  return h ? `${h}:${pad(m)}:${pad(sec)}` : `${m}:${pad(sec)}`;
 }
 function nowMinutes(){ const d = new Date(); return d.getHours()*60 + d.getMinutes(); }
 function toMinutes(hhmm){ const [h,m] = hhmm.split(':').map(Number); return h*60+m; }
 
 function progress(task, k = todayKey()){
-  const v = day(k).done[task.id] || 0;
-  return Math.min(1, v / Math.max(1, task.target));
+  return Math.min(1, (day(k).done[task.id] || 0) / Math.max(1, task.target));
 }
 function dayCompletion(k){
-  if(!state.tasks.length) return 0;
   const d = state.days[k];
-  if(!d) return 0;
-  return state.tasks.reduce((a,t) => a + Math.min(1,(d.done?.[t.id]||0)/Math.max(1,t.target)), 0) / state.tasks.length;
+  if(!d || !state.meta.tasks.length) return 0;
+  return state.meta.tasks.reduce((a,t) => a + Math.min(1,(d.done?.[t.id]||0)/Math.max(1,t.target)), 0) / state.meta.tasks.length;
 }
-
+function gestDaysAt(date){
+  if(!S().dueDate) return null;
+  const t = new Date(date); t.setHours(0,0,0,0);
+  return 280 - Math.round((parseKey(S().dueDate) - t) / 86400000);
+}
 function pregnancy(){
-  const due = state.settings.dueDate;
-  if(!due) return null;
-  const [y,m,dd] = due.split('-').map(Number);
-  const dueD = new Date(y, m-1, dd);
-  const t = new Date(); t.setHours(0,0,0,0);
-  const daysLeft = Math.round((dueD - t) / 86400000);
-  const gest = 280 - daysLeft;
+  const gest = gestDaysAt(new Date());
+  if(gest === null) return null;
+  const daysLeft = 280 - gest;
   if(gest < 0 || gest > 300) return {invalid:true, daysLeft};
-  const week = Math.floor(gest/7), dayIn = gest % 7;
-  const tri = week < 14 ? 1 : week < 28 ? 2 : 3;
-  return {week, dayIn, tri, daysLeft};
+  const week = Math.floor(gest/7);
+  return {week, dayIn:gest%7, tri: week < 14 ? 1 : week < 28 ? 2 : 3, daysLeft};
+}
+function calTarget(){
+  if(Number(S().calOverride) > 0) return Number(S().calOverride);
+  const p = pregnancy(), base = Number(S().baseCal) || 2000;
+  const extra = !p || p.invalid ? 0 : p.tri === 1 ? 0 : p.tri === 2 ? 340 : 450;
+  return base + extra;
+}
+function calsOn(k){ return (state.days[k]?.logs || []).reduce((a,l) => a + (Number(l.cal)||0), 0); }
+function bmiCat(){
+  const h = Number(S().heightIn), w = Number(S().preWeight);
+  if(!h || !w) return null;
+  const bmi = 703 * w / (h*h);
+  return {bmi, cat: bmi < 18.5 ? 'under' : bmi < 25 ? 'normal' : bmi < 30 ? 'over' : 'obese'};
+}
+function gainRange(week, cat){
+  const [lo, hi] = GAIN[cat];
+  if(week <= 13) return [1.1*week/13, 4.4*week/13];
+  const f = Math.min(1, (week-13)/27);
+  return [1.1 + (lo-1.1)*f, 4.4 + (hi-4.4)*f];
 }
 
-/* ------------------------------------------------------------------
-   Toast with undo
-------------------------------------------------------------------- */
+/* ==================================================================
+   Toast
+================================================================== */
 let toastTimer, undoFn = null;
 function toast(msg, undo){
   $('#toast-msg').textContent = msg;
@@ -348,95 +490,138 @@ function toast(msg, undo){
   toastTimer = setTimeout(() => $('#toast').classList.remove('show'), 4000);
 }
 $('#toast-undo').addEventListener('click', () => {
-  if(undoFn){ undoFn(); undoFn = null; save(); render(); }
+  if(undoFn){ undoFn(); undoFn = null; render(); }
   $('#toast').classList.remove('show');
 });
 
-/* ------------------------------------------------------------------
+/* ==================================================================
    Actions
-------------------------------------------------------------------- */
+================================================================== */
 function bump(taskId, delta){
   const d = day();
   d.done[taskId] = Math.max(0, (d.done[taskId]||0) + delta);
 }
 function tapTask(id){
-  const t = state.tasks.find(x => x.id === id); if(!t) return;
-  const d = day(); const cur = d.done[id] || 0;
-  if(t.target <= 1){ d.done[id] = cur ? 0 : 1; }
-  else { d.done[id] = cur + 1; }
-  save(); render({pop:id});
+  const t = state.meta.tasks.find(x => x.id === id); if(!t) return;
+  const d = day(), cur = d.done[id] || 0;
+  d.done[id] = t.target <= 1 ? (cur ? 0 : 1) : cur + 1;
+  touchDay(); render({pop:id});
   if(t.target <= 1 && !cur) toast(`${t.name} done`);
 }
 function addLog(item, minutes){
   const d = day();
-  const entry = {id:uid(), ts:Date.now(), lib:item.id||null, kind:item.kind, name:item.name, r:item.r, caf:item.caf||0, min:minutes||0, tip:item.tip||''};
+  const entry = {id:uid(), ts:Date.now(), lib:item.id||null, kind:item.kind, name:item.name, r:item.r, cal:Number(item.cal)||0, caf:Number(item.caf)||0, min:minutes||0, tip:item.tip||''};
   d.logs.push(entry);
-  let linked = item.link || (item.kind === 'move' ? 'move' : null);
-  const task = linked && state.tasks.find(t => t.id === linked);
+  const linked = item.link || (item.kind === 'move' ? 'move' : null);
+  const task = linked && state.meta.tasks.find(t => t.id === linked);
   let bumped = false;
   if(task){
     if(task.target <= 1){ if(!d.done[task.id]){ d.done[task.id] = 1; bumped = true; } }
     else { bump(task.id, 1); bumped = true; }
   }
-  save(); render();
+  touchDay(); render();
   let msg = `Logged ${item.name}`;
   if(minutes) msg += `, ${minutes} min`;
-  if(item.caf) msg += ` (${item.caf} mg caffeine)`;
+  if(entry.cal) msg += `, ${entry.cal} cal`;
   if(bumped) msg += ` · counts toward ${task.name.toLowerCase()}`;
   toast(msg, () => {
     d.logs = d.logs.filter(l => l.id !== entry.id);
     if(bumped) bump(task.id, -1);
+    touchDay();
   });
 }
+function finishKicks(saveIt){
+  const ks = state.meta.kickSession; if(!ks) return;
+  state.meta.kickSession = null;
+  if(saveIt && ks.count > 0){
+    state.meta.kicks.unshift({id:uid(), start:ks.start, end:Date.now(), count:ks.count});
+    state.meta.kicks = state.meta.kicks.slice(0, 60);
+  }
+  touchMeta(); render();
+  if(saveIt && ks.count) toast(`Saved ${ks.count} movements in ${fmtDur(Date.now()-ks.start)}`);
+}
 
-/* ------------------------------------------------------------------
-   Views
-------------------------------------------------------------------- */
-let tab = 'today', logMode = 'eat', moveMinutes = 30;
-
+/* ==================================================================
+   Shared pieces
+================================================================== */
+function pinGate(){
+  if(sync.mode !== 'needpin') return '';
+  return `<div class="card form" style="margin-bottom:16px">
+    <h3>Enter the app PIN</h3>
+    <p class="small muted">${sync.pinTried ? 'That PIN didn’t match. Try again.' : 'This keeps your data private. You only need to enter it once on each phone.'}</p>
+    <input type="password" id="pin-in" autocomplete="current-password" aria-label="PIN">
+    <button class="btn" id="pin-go" type="button">Unlock</button>
+  </div>`;
+}
+function urgentBanner(){
+  const u = day().urgent;
+  if(!u.length) return '';
+  const harm = u.includes('Thoughts of harming yourself or the baby');
+  return `<div class="urgent" role="alert"><p><strong>You logged: ${esc(u.join(', '))}.</strong>
+    These can be warning signs. Call your OB or labor and delivery now. If it feels like an emergency, call <a href="tel:911">911</a>.
+    ${harm ? `You can also call or text <a href="tel:988">988</a> any time to talk with someone right away.` : ''}</p></div>`;
+}
 function ringSVG(){
-  const tasks = state.tasks, n = tasks.length || 1;
-  const size = 280, cx = size/2, cy = size/2, r = 118, sw = 18;
+  const tasks = state.meta.tasks, n = tasks.length || 1;
+  const size = 280, c = size/2, r = 118, sw = 18;
   const C = 2*Math.PI*r, gap = n > 1 ? 10 : 0, seg = C/n - gap;
   let out = `<svg class="ring" viewBox="0 0 ${size} ${size}" role="img" aria-label="Today’s goals progress">`;
   tasks.forEach((t,i) => {
-    const p = progress(t);
-    const rot = -90 + (360/n)*i + (gap/2)/C*360;
-    out += `<circle class="seg-bg" cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${seg} ${C}" transform="rotate(${rot} ${cx} ${cy})"/>`;
-    if(p > 0) out += `<circle class="seg ${p>=1?'full':''}" cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${seg*p} ${C}" transform="rotate(${rot} ${cx} ${cy})"/>`;
+    const p = progress(t), rot = -90 + (360/n)*i + (gap/2)/C*360;
+    const common = `cx="${c}" cy="${c}" r="${r}" fill="none" stroke-width="${sw}" stroke-linecap="round" transform="rotate(${rot} ${c} ${c})"`;
+    out += `<circle class="seg-bg" ${common} stroke-dasharray="${seg} ${C}"/>`;
+    if(p > 0) out += `<circle class="seg ${p>=1?'full':''}" ${common} stroke-dasharray="${seg*p} ${C}"/>`;
   });
   return out + '</svg>';
 }
+function nextAppt(){
+  const tk = todayKey();
+  return [...state.meta.appts].filter(a => a.date >= tk).sort((a,b) => (a.date+(a.time||'')).localeCompare(b.date+(b.time||'')))[0];
+}
 
+/* ==================================================================
+   Today
+================================================================== */
 function viewToday(){
-  const now = new Date();
   const preg = pregnancy();
-  const doneCount = state.tasks.filter(t => progress(t) >= 1).length;
+  const tasks = state.meta.tasks;
+  const doneCount = tasks.filter(t => progress(t) >= 1).length;
   let center;
   if(preg && !preg.invalid){
     center = `<div class="wk">Week ${preg.week}</div>
-      <div class="wk-sub">${preg.dayIn ? `and ${preg.dayIn} day${preg.dayIn>1?'s':''} · `:''}trimester ${preg.tri}<br>${preg.daysLeft > 0 ? `${preg.daysLeft} days to go` : preg.daysLeft === 0 ? 'Due today' : `${-preg.daysLeft} days past due`}</div>`;
+      <div class="wk-sub">${preg.dayIn ? `and ${preg.dayIn} day${preg.dayIn>1?'s':''}, `:''}trimester ${preg.tri}<br>${preg.daysLeft > 0 ? `${preg.daysLeft} days to go` : preg.daysLeft === 0 ? 'Due today' : `${-preg.daysLeft} days past due`}</div>`;
   } else {
-    center = `<div class="wk">Today</div><button class="set-due" data-goto="settings">Add your due date</button>`;
+    center = `<div class="wk">Today</div><button class="linkish" data-goto="more">Add your due date</button>`;
   }
-  center += `<div class="done-line">${doneCount} of ${state.tasks.length} goals done</div>`;
+  center += `<div class="done-line">${doneCount} of ${tasks.length} goals done</div>`;
 
-  // Up next
   const nm = nowMinutes();
-  const upcoming = state.tasks.filter(t => t.time && progress(t) < 1).sort((a,b) => toMinutes(a.time) - toMinutes(b.time));
-  const overdue = upcoming.filter(t => toMinutes(t.time) <= nm);
-  const next = upcoming.find(t => toMinutes(t.time) > nm);
+  const open = tasks.filter(t => t.time && progress(t) < 1).sort((a,b) => toMinutes(a.time) - toMinutes(b.time));
+  const overdue = open.filter(t => toMinutes(t.time) <= nm);
+  const next = open.find(t => toMinutes(t.time) > nm);
   let nextHTML = '';
   if(overdue.length) nextHTML = `<div class="next"><span aria-hidden="true">⏰</span><span><strong>${esc(overdue[0].name)}</strong> was planned for ${fmtTime(overdue[0].time)}${overdue.length>1?` (+${overdue.length-1} more)`:''}</span></div>`;
   else if(next) nextHTML = `<div class="next"><span aria-hidden="true">${esc(next.icon)}</span><span>Up next: <strong>${esc(next.name)}</strong> at ${fmtTime(next.time)}</span></div>`;
-  else if(doneCount === state.tasks.length && state.tasks.length) nextHTML = `<div class="next"><span aria-hidden="true">🌷</span><span><strong>Every goal done today.</strong> Rest easy.</span></div>`;
+  else if(doneCount === tasks.length && tasks.length) nextHTML = `<div class="next"><span aria-hidden="true">🌷</span><span><strong>Every goal done today.</strong> Rest easy.</span></div>`;
 
-  const tasksHTML = state.tasks.map(t => {
+  const appt = nextAppt();
+  let apptHTML = '';
+  if(appt && (parseKey(appt.date) - parseKey(todayKey())) / 86400000 <= 14){
+    const qs = state.meta.questions.filter(q => !q.done).length;
+    apptHTML = `<div class="next"><span aria-hidden="true">🩺</span><span><strong>${esc(appt.title)}</strong> ${appt.date === todayKey() ? 'today' : fmtDate(appt.date)}${appt.time ? ` at ${fmtTime(appt.time)}`:''}${qs ? `. ${qs} question${qs>1?'s':''} saved.`:''}</span></div>`;
+  }
+
+  const cals = calsOn(todayKey()), target = calTarget();
+  const calHTML = `<div class="card mt"><div class="top"><h3>Calories</h3><button class="linkish" data-goto="log">Log food</button></div>
+      <div class="meter"><i style="width:${Math.min(100, cals/target*100)}%"></i></div>
+      <p class="small muted">${num(cals)} of about ${num(target)} today</p></div>`;
+
+  const tasksHTML = tasks.map(t => {
     const v = day().done[t.id] || 0, full = v >= t.target;
     const late = t.time && !full && toMinutes(t.time) <= nm;
     const meta = [
       t.target > 1 ? `${v} of ${t.target} ${esc(t.unit||'')}`.trim() : (full ? 'Done' : 'Tap when done'),
-      t.time ? `${late?'planned ':''}${fmtTime(t.time)}` : ''
+      t.time ? fmtTime(t.time) : ''
     ].filter(Boolean).join(' · ');
     return `<div class="task ${full?'done':''}">
       <button class="task-main" data-act="tap" data-id="${esc(t.id)}" aria-pressed="${full}">
@@ -447,70 +632,176 @@ function viewToday(){
     </div>`;
   }).join('');
 
-  return `<header class="top"><h1>Hi, ${esc(state.settings.name || 'there')}</h1>
-      <span class="date">${now.toLocaleDateString(undefined,{weekday:'long', month:'short', day:'numeric'})}</span></header>
+  return `${pinGate()}<header class="top"><h1>Hi, ${esc(S().name || 'there')}</h1>
+      <span class="date">${new Date().toLocaleDateString(undefined,{weekday:'long', month:'short', day:'numeric'})}</span></header>
+    ${urgentBanner()}
     <div class="ring-wrap">${ringSVG()}<div class="ring-center"><div>${center}</div></div></div>
-    ${nextHTML}
+    ${nextHTML}${apptHTML}${calHTML}
     <h2>Daily goals</h2>
-    <div class="tasks">${tasksHTML || `<div class="empty">No goals yet. Add some in Settings.</div>`}</div>`;
+    <div class="tasks">${tasksHTML || `<div class="empty">No goals yet. Add some in More.</div>`}</div>`;
 }
 
-function chipGroup(items, title, r){
+/* ==================================================================
+   Log
+================================================================== */
+let logMode = 'eat', moveMinutes = 30;
+function chipGroup(items, title, r, attr = 'log'){
   if(!items.length) return '';
   return `<div class="group"><div class="group-head"><span class="dot ${r}"></span>${title}</div>
-    <div class="chips">${items.map(i => `<button class="chip ${i.r}" data-log="${i.id}">${esc(i.name)}</button>`).join('')}</div></div>`;
+    <div class="chips">${items.map(i => `<button class="chip ${i.r||''}" data-${attr}="${esc(i.id)}">${esc(i.name)}${i.kind==='eat' && i.cal ? `<small>${i.cal}</small>`:''}</button>`).join('')}</div></div>`;
 }
-
 function viewLog(){
+  const tabs = `<div class="seg-ctl" role="group" aria-label="What to log">
+      <button data-mode="eat" aria-pressed="${logMode==='eat'}">Food and drink</button>
+      <button data-mode="move" aria-pressed="${logMode==='move'}">Movement</button>
+      <button data-mode="feel" aria-pressed="${logMode==='feel'}">How I feel</button>
+    </div>`;
+  const head = `${pinGate()}<header class="top"><h1>Log</h1><span class="date">${new Date().toLocaleDateString(undefined,{weekday:'long'})}</span></header>${tabs}`;
+  if(logMode === 'feel') return head + viewFeel();
+
   const items = LIB.filter(i => i.kind === logMode);
   const labels = RATING[logMode];
-  let picker = '';
+  let extra = '';
   if(logMode === 'move'){
-    picker = `<div class="group"><div class="group-head">How long?</div><div class="chips">
+    extra = `<div class="group"><div class="group-head">How long?</div><div class="chips">
       ${[10,15,20,30,45,60].map(m => `<button class="chip" data-min="${m}" aria-pressed="${m===moveMinutes}">${m} min</button>`).join('')}
     </div></div>`;
+  } else {
+    const favs = state.meta.favorites.map(f => ({...f, kind:'eat'}));
+    extra = chipGroup(favs, 'Your usuals', 'fav', 'fav');
   }
-  const logs = [...day().logs].sort((a,b) => b.ts - a.ts);
-  const logHTML = logs.length ? `<ul class="log">${logs.map(l => `<li>
+
+  const logs = [...day().logs].filter(l => l.kind === logMode).sort((a,b) => b.ts - a.ts);
+  const total = calsOn(todayKey());
+  const logHTML = logs.length ? `<ul class="list">${logs.map(l => `<li>
       <span class="when">${fmtClock(l.ts)}</span>
-      <span class="what">${esc(l.name)}${l.min ? `, ${l.min} min`:''}${l.caf ? `<span>${l.caf} mg caffeine</span>`:''}</span>
+      <button class="what" data-edit="${l.id}" aria-label="Edit ${esc(l.name)}">${esc(l.name)}${l.min ? `, ${l.min} min`:''}
+        ${l.kind==='eat' ? `<span>${l.cal ? `${num(l.cal)} cal`:'Tap to add calories'}${l.caf ? ` · ${l.caf} mg caffeine`:''}</span>`:''}</button>
       <span class="badge ${l.r}">${RATING[l.kind]?.[l.r] || ''}</span>
       <button class="x" data-del="${l.id}" aria-label="Delete ${esc(l.name)}">×</button></li>`).join('')}</ul>`
     : `<div class="empty">Nothing logged yet today. Tap anything above to add it.</div>`;
 
-  return `<header class="top"><h1>Log</h1><span class="date">Tap to add</span></header>
-    <div class="seg-ctl" role="group" aria-label="What to log">
-      <button data-mode="eat" aria-pressed="${logMode==='eat'}">Food and drink</button>
-      <button data-mode="move" aria-pressed="${logMode==='move'}">Movement</button>
-    </div>
-    ${picker}
+  return `${head}${extra}
     ${chipGroup(items.filter(i=>i.r==='good'), labels.good, 'good')}
     ${chipGroup(items.filter(i=>i.r==='caution'), labels.caution, 'caution')}
     ${chipGroup(items.filter(i=>i.r==='avoid'), labels.avoid, 'avoid')}
-    <form class="custom" id="custom-form" onsubmit="return false">
+    ${logMode==='eat' ? `<p class="small muted mt">Numbers are typical calories per serving. Tap an entry below to change it.</p>`:''}
+    <div class="card form mt">
       <h3>Something else</h3>
-      <div class="row">
-        <input type="text" id="c-name" placeholder="${logMode==='eat' ? 'e.g. Pho with brisket' : 'e.g. Pool walking'}" aria-label="Name">
-      </div>
+      <input type="text" id="c-name" placeholder="${logMode==='eat' ? 'e.g. Pho with brisket' : 'e.g. Pool walking'}" aria-label="Name">
       <div class="row">
         <select id="c-r" aria-label="Rating">
           <option value="good">${labels.good}</option>
           <option value="caution">${labels.caution}</option>
           <option value="avoid">${labels.avoid}</option>
         </select>
-        ${logMode==='eat' ? `<input type="number" id="c-caf" min="0" inputmode="numeric" placeholder="Caffeine mg" aria-label="Caffeine in mg">` : ''}
+        ${logMode==='eat' ? `<input type="number" id="c-cal" min="0" inputmode="numeric" placeholder="Calories" aria-label="Calories">` : ''}
       </div>
+      ${logMode==='eat' ? `<div class="row"><input type="number" id="c-caf" min="0" inputmode="numeric" placeholder="Caffeine mg (optional)" aria-label="Caffeine in mg"></div>
+      <label class="check-row"><input type="checkbox" id="c-fav">Save to my usuals</label>` : ''}
       <button class="btn" id="c-add" type="button">Add to today</button>
-    </form>
-    <h2>Today’s log</h2>
+    </div>
+    <h2>${logMode==='eat' ? `Today, ${num(total)} cal` : 'Today’s movement'}</h2>
     ${logHTML}`;
 }
+function viewFeel(){
+  const d = day();
+  return `<h3>Mood</h3>
+    <div class="moods mt">${MOODS.map(m => `<button class="mood" data-mood="${m.v}" aria-pressed="${d.mood===m.v}"><span aria-hidden="true">${m.e}</span>${m.l}</button>`).join('')}</div>
+    <div class="group"><div class="group-head">Symptoms today</div>
+      <div class="chips">${SYMPTOMS.map(s => `<button class="chip" data-sym="${esc(s)}" aria-pressed="${d.symptoms.includes(s)}">${esc(s)}</button>`).join('')}</div></div>
+    <div class="group"><div class="group-head"><span class="dot avoid"></span>Call your OB about these</div>
+      <div class="chips">${URGENT.map(s => `<button class="chip avoid urg" data-urg="${esc(s)}" aria-pressed="${d.urgent.includes(s)}">${esc(s)}</button>`).join('')}</div></div>
+    ${urgentBanner()}
+    <h2>Notes</h2>
+    <textarea id="feel-note" placeholder="Anything worth remembering about today" aria-label="Notes">${esc(d.note || '')}</textarea>`;
+}
 
+/* ==================================================================
+   Body: weight and kicks
+================================================================== */
+function weightChart(cat){
+  const pre = Number(S().preWeight);
+  const pts = state.meta.weights.map(w => ({wk:gestDaysAt(parseKey(w.date))/7, g:w.lb - pre}))
+    .filter(p => p.wk >= 0 && p.wk <= 42).sort((a,b) => a.wk - b.wk);
+  const W = 340, H = 200, L = 34, R = 10, T = 10, B = 26;
+  const maxG = Math.max(GAIN[cat][1] + 3, ...pts.map(p => p.g + 3));
+  const minG = Math.min(-3, ...pts.map(p => p.g - 3));
+  const x = wk => L + (wk/40)*(W-L-R);
+  const y = g => T + (maxG-g)/(maxG-minG)*(H-T-B);
+  const top = [], bot = [];
+  for(let w=0; w<=40; w++){ const [lo,hi] = gainRange(w, cat); top.push(`${x(w)},${y(hi)}`); bot.unshift(`${x(w)},${y(lo)}`); }
+  let svg = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Weight gain by week compared with the typical range">
+    <polygon class="band" points="${top.concat(bot).join(' ')}"/>
+    <line class="axis" x1="${L}" x2="${W-R}" y1="${y(0)}" y2="${y(0)}"/>`;
+  [0,10,20,30,40].forEach(w => svg += `<text x="${x(w)}" y="${H-8}" text-anchor="middle">${w}</text>`);
+  const step = maxG - minG > 40 ? 20 : 10;
+  for(let g = Math.ceil(minG/step)*step; g <= maxG; g += step) svg += `<text x="${L-6}" y="${y(g)+4}" text-anchor="end">${g>0?'+':''}${g}</text>`;
+  if(pts.length > 1) svg += `<polyline class="ln" points="${pts.map(p => `${x(p.wk)},${y(p.g)}`).join(' ')}"/>`;
+  pts.forEach(p => svg += `<circle class="pt" cx="${x(p.wk)}" cy="${y(p.g)}" r="4"/>`);
+  return svg + `</svg><p class="small muted">Pounds gained by week of pregnancy. The shaded band is the typical range for a ${CAT_LABEL[cat]} starting BMI.</p>`;
+}
+function viewBody(){
+  const b = bmiCat();
+  const needSetup = !S().dueDate || !b;
+  const hFt = S().heightIn ? Math.floor(S().heightIn/12) : '', hIn = S().heightIn ? S().heightIn % 12 : '';
+  const setup = needSetup ? `<div class="card form">
+      <h3>Set up weight tracking</h3>
+      <p class="small muted">These let the app compare your progress with the typical range for you.</p>
+      <label class="field">Due date<input type="date" data-setting="dueDate" value="${esc(S().dueDate)}"></label>
+      <div class="row">
+        <label class="field">Height, feet<input type="number" min="3" max="7" inputmode="numeric" data-height="ft" value="${hFt}"></label>
+        <label class="field">Inches<input type="number" min="0" max="11" inputmode="numeric" data-height="in" value="${hIn}"></label>
+      </div>
+      <label class="field">Weight before pregnancy (lb)<input type="number" inputmode="decimal" data-setting="preWeight" value="${esc(S().preWeight)}"></label>
+    </div>` : '';
+
+  const ws = [...state.meta.weights].sort((a,c) => c.date.localeCompare(a.date));
+  const list = ws.length ? `<ul class="list mt">${ws.slice(0,8).map(w => {
+      const g = S().preWeight ? w.lb - Number(S().preWeight) : null;
+      return `<li><span class="what">${fmtDate(w.date)}<span>${w.lb} lb${g!==null ? `, ${g>=0?'+':''}${g.toFixed(1)} lb total`:''}</span></span>
+        <button class="x" data-wdel="${w.id}" aria-label="Delete weight from ${fmtDate(w.date)}">×</button></li>`; }).join('')}</ul>` : '';
+
+  const ks = state.meta.kickSession;
+  const preg = pregnancy();
+  const kickIntro = preg && !preg.invalid && preg.week < 28
+    ? 'Most OBs suggest daily kick counts starting around week 28. You can try it any time.'
+    : 'Pick a time the baby is usually active. Count kicks, rolls and flutters until you reach 10.';
+  const lastKicks = state.meta.kicks.slice(0,5);
+  const longWait = ks && Date.now() - ks.start > 2*3600*1000 && ks.count < 10;
+
+  return `${pinGate()}<header class="top"><h1>Body</h1></header>
+    <h2>Weight</h2>
+    ${setup}
+    <div class="card form ${needSetup?'mt':''}">
+      <div class="row">
+        <label class="field">Weight (lb)<input type="number" id="w-lb" inputmode="decimal" step="0.1"></label>
+        <label class="field">Date<input type="date" id="w-date" value="${todayKey()}"></label>
+      </div>
+      <button class="btn" id="w-add" type="button">Save weight</button>
+      ${!needSetup && state.meta.weights.length ? weightChart(b.cat) : ''}
+    </div>
+    ${list}
+    <h2>Kick counter</h2>
+    <div class="card kick">
+      <p class="small muted">${kickIntro}</p>
+      <button class="kick-btn" id="kick-tap" type="button" aria-label="Count a movement"><b>${ks ? ks.count : 0}</b><span>${ks ? 'Tap for each movement' : 'Tap at the first movement'}</span></button>
+      ${ks ? `<div class="kick-time" id="kick-elapsed">${fmtDur(Date.now()-ks.start)}</div>
+        <div class="row" style="width:100%"><button class="btn ghost" id="kick-cancel" type="button">Discard</button><button class="btn" id="kick-done" type="button">Save session</button></div>` : ''}
+      ${longWait ? `<div class="urgent" role="alert"><p><strong>Fewer than 10 movements in 2 hours.</strong> Call your OB or labor and delivery now.</p></div>` : ''}
+    </div>
+    ${lastKicks.length ? `<ul class="list mt">${lastKicks.map(k => `<li><span class="what">${new Date(k.start).toLocaleDateString(undefined,{weekday:'short', month:'short', day:'numeric'})}, ${fmtClock(k.start)}<span>${k.count} movements in ${fmtDur(k.end-k.start)}</span></span></li>`).join('')}</ul>` : ''}`;
+}
+
+/* ==================================================================
+   Insights
+================================================================== */
 function insightsToday(){
-  const notes = [];
-  const d = day(), logs = d.logs;
-  const t = id => state.tasks.find(x => x.id === id);
+  const notes = [], d = day(), logs = d.logs;
+  const t = id => state.meta.tasks.find(x => x.id === id);
   const hour = new Date().getHours();
+
+  if(d.urgent.length) notes.push(['flag','🚨',`<b>Warning signs logged: ${esc(d.urgent.join(', '))}.</b> Call your OB or labor and delivery now.`]);
 
   const vit = t('vitamin');
   if(vit){
@@ -523,82 +814,138 @@ function insightsToday(){
     if(v >= w.target) notes.push(['good','💧',`<b>Water goal reached</b> with ${v} cups. Hydration helps with swelling, headaches and constipation.`]);
     else if(hour >= 14) notes.push(['watch','💧',`<b>${v} of ${w.target} cups of water so far.</b> A full bottle by dinner closes most of the gap.`]);
   }
+
+  const cals = calsOn(todayKey()), target = calTarget();
+  if(cals > 0){
+    if(hour >= 19 && cals < target*0.6) notes.push(['watch','🍽️',`<b>About ${num(cals)} calories logged today</b>, well under your ${num(target)} target. If nausea or a busy day got in the way, a snack with protein before bed helps.`]);
+    else if(cals > target*1.25) notes.push(['info','🍽️',`<b>About ${num(cals)} calories today</b>, above your ${num(target)} target. One day doesn’t matter much; the weekly average is the better guide.`]);
+    else notes.push(['good','🍽️',`<b>${num(cals)} of about ${num(target)} calories</b> so far today.`]);
+  }
+
   const caf = logs.reduce((a,l) => a + (l.caf||0), 0);
   if(caf > 200) notes.push(['flag','☕',`<b>${caf} mg caffeine today</b>, over the 200 mg guideline most OBs use. Decaf or herbal tea for the rest of the day keeps it in range.`]);
   else if(caf > 0) notes.push(['good','☕',`<b>${caf} mg caffeine</b>, within the 200 mg daily guideline.`]);
 
   const goodEats = logs.filter(l => l.kind==='eat' && l.r==='good' && l.lib!=='water');
-  if(goodEats.length >= 3) notes.push(['good','🥗',`<b>${goodEats.length} nourishing choices logged.</b> ${esc(goodEats.slice(-3).map(l=>l.name).join(', '))}.`]);
+  if(goodEats.length >= 3) notes.push(['good','🥗',`<b>${goodEats.length} nourishing choices logged.</b> ${esc([...new Set(goodEats.map(l=>l.name))].slice(-3).join(', '))}.`]);
 
   const seen = new Set();
   logs.filter(l => l.r==='avoid' && !seen.has(l.name) && seen.add(l.name)).forEach(l => {
     notes.push(['flag','⚠️',`<b>${esc(l.name)}.</b> ${esc(l.tip)} A one-off happens; if you’re worried about it, mention it to your OB.`]);
   });
   const seenC = new Set();
-  logs.filter(l => l.r==='caution' && !l.caf && !seenC.has(l.name) && seenC.add(l.name)).forEach(l => {
+  logs.filter(l => l.r==='caution' && !l.caf && l.tip && !seenC.has(l.name) && seenC.add(l.name)).forEach(l => {
     notes.push(['watch','👀',`<b>${esc(l.name)}.</b> ${esc(l.tip)}`]);
   });
 
   const moveMin = logs.filter(l => l.kind==='move').reduce((a,l)=>a+(l.min||0),0);
   if(moveMin >= 30) notes.push(['good','🚶‍♀️',`<b>${moveMin} minutes of movement today.</b> That’s a full day’s share of the weekly goal.`]);
 
-  if(!notes.length) notes.push(['good','🌱','<b>A fresh day.</b> Insights fill in as you check off goals and log what you eat and do.']);
+  if(!notes.length) notes.push(['info','🌱','<b>A fresh day.</b> Insights fill in as you check off goals and log what you eat, do and feel.']);
   return notes;
 }
-
-function streak(test){
-  let n = 0; const d = new Date();
-  if(!test(keyOf(d))) d.setDate(d.getDate()-1); // today not done yet doesn't break streak
-  while(test(keyOf(d))){ n++; d.setDate(d.getDate()-1); }
-  return n;
+function insightsWeek(days){
+  const notes = [];
+  // Weight
+  const b = bmiCat(), latest = [...state.meta.weights].sort((a,c) => c.date.localeCompare(a.date))[0];
+  if(b && latest && S().dueDate){
+    const wk = Math.floor(gestDaysAt(parseKey(latest.date))/7);
+    if(wk >= 0 && wk <= 42){
+      const g = latest.lb - Number(S().preWeight), [lo,hi] = gainRange(wk, b.cat);
+      const gTxt = `${g>=0?'Up':'Down'} ${Math.abs(g).toFixed(1)} lb at week ${wk}`;
+      if(g >= lo - 0.5 && g <= hi + 0.5) notes.push(['good','⚖️',`<b>${gTxt},</b> inside the typical ${lo.toFixed(0)}–${hi.toFixed(0)} lb range for this point.`]);
+      else notes.push(['watch','⚖️',`<b>${gTxt}.</b> The typical range for this point is ${lo.toFixed(0)}–${hi.toFixed(0)} lb. Worth a mention at your next appointment; your OB looks at the overall trend, not one weigh-in.`]);
+    }
+  }
+  // Mood
+  const moods = days.map(d => state.days[keyOf(d)]?.mood).filter(Boolean);
+  if(moods.length >= 3){
+    const avg = moods.reduce((a,m)=>a+m,0)/moods.length;
+    if(avg <= 2.2) notes.push(['watch','💜',`<b>Your mood has been low most of this week.</b> That’s common in pregnancy and very treatable. It’s worth telling your OB, especially if it has lasted two weeks or more.`]);
+    else notes.push(['info','💜',`<b>Mood this week:</b> mostly ${MOODS[Math.round(avg)-1].l.toLowerCase()}.`]);
+  }
+  // Symptoms
+  const counts = {};
+  days.forEach(d => (state.days[keyOf(d)]?.symptoms || []).forEach(s => counts[s] = (counts[s]||0)+1));
+  const top = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,3);
+  if(top.length) notes.push(['info','📝',`<b>Most logged this week:</b> ${top.map(([s,n]) => `${esc(s.toLowerCase())} (${n} day${n>1?'s':''})`).join(', ')}. Good to bring up at your next visit.`]);
+  // Kicks
+  const k = state.meta.kicks[0];
+  if(k && Date.now() - k.start < 7*86400000) notes.push(['info','👣',`<b>Last kick count:</b> ${k.count} movements in ${fmtDur(k.end-k.start)}.`]);
+  return notes;
 }
-
 function viewInsights(){
-  const notes = insightsToday();
-  const order = {flag:0, watch:1, good:2};
-  notes.sort((a,b) => order[a[0]] - order[b[0]]);
-  const notesHTML = notes.map(([tone,ic,html]) => `<div class="note ${tone}"><span class="ic" aria-hidden="true">${ic}</span><p>${html}</p></div>`).join('');
+  const order = {flag:0, watch:1, good:2, info:3};
+  const noteHTML = arr => arr.sort((a,b) => order[a[0]] - order[b[0]])
+    .map(([tone,ic,html]) => `<div class="note ${tone}"><span class="ic" aria-hidden="true">${ic}</span><p>${html}</p></div>`).join('');
 
   const days = lastNDays(7), tk = todayKey();
+  const weekNotes = insightsWeek(days);
   const bars = days.map(d => {
     const k = keyOf(d), pct = Math.round(dayCompletion(k)*100);
-    return `<div class="bar ${k===tk?'today':''}" title="${pct}%"><small>${pct}%</small><i style="height:${Math.max(3,pct)}%"></i><small>${d.toLocaleDateString(undefined,{weekday:'narrow'})}</small></div>`;
+    return `<div class="bar ${k===tk?'today':''}"><small>${pct}%</small><i style="height:${Math.max(3,pct)}%"></i><small>${d.toLocaleDateString(undefined,{weekday:'narrow'})}</small></div>`;
   }).join('');
 
   const weekMin = days.reduce((a,d) => a + (state.days[keyOf(d)]?.logs||[]).filter(l=>l.kind==='move').reduce((s,l)=>s+(l.min||0),0), 0);
+  const calDays = days.map(d => calsOn(keyOf(d))).filter(c => c > 0);
+  const avgCal = calDays.length ? calDays.reduce((a,c)=>a+c,0)/calDays.length : 0;
   const avgCaf = Math.round(days.reduce((a,d) => a + (state.days[keyOf(d)]?.logs||[]).reduce((s,l)=>s+(l.caf||0),0), 0) / 7);
-  const weekLogs = days.flatMap(d => state.days[keyOf(d)]?.logs || []).filter(l => l.kind==='eat' && l.lib!=='water');
-  const goodShare = weekLogs.length ? Math.round(weekLogs.filter(l=>l.r==='good').length / weekLogs.length * 100) : null;
+  const weekEats = days.flatMap(d => state.days[keyOf(d)]?.logs || []).filter(l => l.kind==='eat' && l.lib!=='water');
+  const goodShare = weekEats.length ? Math.round(weekEats.filter(l=>l.r==='good').length / weekEats.length * 100) : null;
+  const streak = test => { let n = 0; const d = new Date(); if(!test(keyOf(d))) d.setDate(d.getDate()-1); while(test(keyOf(d))){ n++; d.setDate(d.getDate()-1); } return n; };
+  const vitStreak = streak(k => (state.days[k]?.done?.vitamin||0) >= 1);
 
-  const vitTask = state.tasks.find(t=>t.id==='vitamin');
-  const waterTask = state.tasks.find(t=>t.id==='water');
-  const vitStreak = vitTask ? streak(k => (state.days[k]?.done?.vitamin||0) >= 1) : 0;
-  const waterStreak = waterTask ? streak(k => (state.days[k]?.done?.water||0) >= waterTask.target) : 0;
-
-  return `<header class="top"><h1>Insights</h1><span class="date">Today and this week</span></header>
+  return `${pinGate()}<header class="top"><h1>Insights</h1></header>
     <h2>Today</h2>
-    <div class="notes">${notesHTML}</div>
+    <div class="notes">${noteHTML(insightsToday())}</div>
+    ${weekNotes.length ? `<h2>This week</h2><div class="notes">${noteHTML(weekNotes)}</div>` : ''}
     <h2>Last 7 days</h2>
     <div class="card"><h3>Daily goals completed</h3><div class="bars">${bars}</div></div>
-    <div class="card" style="margin-top:10px">
+    <div class="card mt">
       <h3>Movement</h3>
       <div class="meter" role="progressbar" aria-valuemin="0" aria-valuemax="150" aria-valuenow="${weekMin}"><i style="width:${Math.min(100, weekMin/150*100)}%"></i></div>
-      <p class="small muted" style="margin:0">${weekMin} of 150 minutes. ACOG recommends about 150 minutes of moderate activity a week, like 30 minutes on 5 days.</p>
+      <p class="small muted">${weekMin} of 150 minutes. ACOG recommends about 150 minutes of moderate activity a week, like 30 minutes on 5 days.</p>
     </div>
-    <div class="stats" style="margin-top:10px">
+    <div class="stats mt">
+      <div class="stat"><div class="n">${calDays.length ? num(avgCal) : '–'}</div><div class="small muted">average calories on days you logged (target ${num(calTarget())})</div></div>
       <div class="stat"><div class="n">${vitStreak}</div><div class="small muted">day vitamin streak</div></div>
-      <div class="stat"><div class="n">${waterStreak}</div><div class="small muted">days hitting water goal</div></div>
       <div class="stat"><div class="n">${avgCaf}<span class="small"> mg</span></div><div class="small muted">average caffeine a day</div></div>
       <div class="stat"><div class="n">${goodShare===null?'–':goodShare+'%'}</div><div class="small muted">of foods logged were good choices</div></div>
     </div>
-    <p class="disclaimer">These insights use general guidance from ACOG and the FDA. Every pregnancy is different, so your OB or midwife’s advice comes first, especially for exercise and any high-risk conditions.</p>`;
+    <p class="disclaimer">These insights use general guidance from ACOG, the CDC, the FDA and the Institute of Medicine. Every pregnancy is different, so your OB or midwife’s advice comes first.</p>`;
 }
 
-function viewSettings(){
-  const goals = state.tasks.map((t,i) => `<div class="goal-edit" data-idx="${i}">
+/* ==================================================================
+   More: appointments, questions, settings
+================================================================== */
+function viewMore(){
+  const tk = todayKey();
+  const appts = [...state.meta.appts].sort((a,b) => (a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
+  const upcoming = appts.filter(a => a.date >= tk), past = appts.filter(a => a.date < tk).reverse().slice(0,5);
+  const apptLi = (a, cls='') => `<li class="${cls}"><span class="what">${esc(a.title)}<span>${fmtDate(a.date)}${a.time ? `, ${fmtTime(a.time)}`:''}${a.notes ? ` · ${esc(a.notes)}`:''}</span></span>
+      <button class="x" data-adel="${a.id}" aria-label="Delete ${esc(a.title)}">×</button></li>`;
+
+  const qs = state.meta.questions;
+  const syncText = {
+    synced: `Synced${sync.last ? ` at ${fmtClock(sync.last)}`:''}. Open the same link on another phone and enter the PIN to see the same data.`,
+    offline: 'Offline. Changes are saved on this phone and will sync when you’re back online.',
+    local: 'Saved on this phone only. Add the database and APP_PIN in Vercel to sync (see the README).',
+    needpin: 'Enter the PIN at the top of this page to sync.',
+    checking: 'Checking…',
+    error: esc(sync.msg)
+  }[sync.mode];
+
+  const perm = ('Notification' in window) ? Notification.permission : 'unsupported';
+  const permText = perm === 'granted' ? 'Reminders are on. They show while the app is open or in the background.' :
+                   perm === 'denied' ? 'Notifications are blocked. Turn them on in your phone’s settings for this app.' :
+                   perm === 'unsupported' ? 'On iPhone, add the app to your Home Screen and open it from there to turn on reminders.' :
+                   'Get a nudge when a goal’s reminder time passes, and an hour before appointments.';
+  const hFt = S().heightIn ? Math.floor(S().heightIn/12) : '', hIn = S().heightIn ? S().heightIn % 12 : '';
+
+  const goals = state.meta.tasks.map((t,i) => `<div class="goal-edit" data-idx="${i}">
       <div class="row">
-        <input type="text" class="narrow" value="${esc(t.icon)}" data-f="icon" aria-label="Icon" style="flex:0 0 58px;text-align:center">
-        <input type="text" value="${esc(t.name)}" data-f="name" aria-label="Goal name">
+        <input type="text" value="${esc(t.icon)}" data-f="icon" aria-label="Icon" style="flex:0 0 58px;text-align:center">
+        <input type="text" value="${esc(t.name)}" data-f="name" aria-label="Goal name" style="flex:4">
       </div>
       <div class="row">
         <label class="field">Times a day<input type="number" min="1" max="30" value="${t.target}" data-f="target"></label>
@@ -608,157 +955,282 @@ function viewSettings(){
       <button class="btn danger" data-rm="${i}" type="button">Remove goal</button>
     </div>`).join('');
 
-  const perm = ('Notification' in window) ? Notification.permission : 'unsupported';
-  const permText = perm === 'granted' ? 'Reminders are on. They show while the app is open or in the background.' :
-                   perm === 'denied' ? 'Notifications are blocked. Turn them on in your phone’s settings for this app.' :
-                   perm === 'unsupported' ? 'This browser doesn’t support notifications. On iPhone, add the app to your Home Screen first.' :
-                   'Get a nudge when a goal’s reminder time passes.';
+  return `${pinGate()}<header class="top"><h1>More</h1></header>
 
-  return `<header class="top"><h1>Settings</h1></header>
-    <h2>About you</h2>
-    <div class="stack">
-      <label class="field">Name<input type="text" id="s-name" value="${esc(state.settings.name)}"></label>
-      <label class="field">Due date<input type="date" id="s-due" value="${esc(state.settings.dueDate)}"></label>
+    <h2>Appointments</h2>
+    ${upcoming.length ? `<ul class="list">${upcoming.map(a => apptLi(a)).join('')}</ul>` : `<div class="empty">No upcoming appointments.</div>`}
+    <div class="card form mt">
+      <input type="text" id="a-title" placeholder="e.g. OB checkup, anatomy scan" aria-label="Appointment">
+      <div class="row">
+        <input type="date" id="a-date" aria-label="Date">
+        <input type="time" id="a-time" aria-label="Time">
+      </div>
+      <input type="text" id="a-notes" placeholder="Location or notes (optional)" aria-label="Notes">
+      <button class="btn" id="a-add" type="button">Add appointment</button>
     </div>
+    ${past.length ? `<p class="small muted mt">Recent</p><ul class="list mt">${past.map(a => apptLi(a,'past')).join('')}</ul>` : ''}
+
+    <h2>Questions for the OB</h2>
+    ${qs.length ? `<ul class="list">${qs.map(q => `<li><label class="check-row what" style="flex:1"><input type="checkbox" data-qtoggle="${q.id}" ${q.done?'checked':''}><span style="color:var(--ink);font-size:1rem;${q.done?'text-decoration:line-through;opacity:.6':''}">${esc(q.text)}</span></label>
+        <button class="x" data-qdel="${q.id}" aria-label="Delete question">×</button></li>`).join('')}</ul>` : `<div class="empty">Jot questions down as they come up so nothing gets forgotten at the visit.</div>`}
+    <div class="row mt"><input type="text" id="q-text" placeholder="Add a question" aria-label="New question" style="flex:3"><button class="btn" id="q-add" type="button">Add</button></div>
+
+    <h2>About you</h2>
+    <div class="card form">
+      <label class="field">Name<input type="text" data-setting="name" value="${esc(S().name)}"></label>
+      <label class="field">Due date<input type="date" data-setting="dueDate" value="${esc(S().dueDate)}"></label>
+      <div class="row">
+        <label class="field">Height, feet<input type="number" min="3" max="7" inputmode="numeric" data-height="ft" value="${hFt}"></label>
+        <label class="field">Inches<input type="number" min="0" max="11" inputmode="numeric" data-height="in" value="${hIn}"></label>
+      </div>
+      <label class="field">Weight before pregnancy (lb)<input type="number" inputmode="decimal" data-setting="preWeight" value="${esc(S().preWeight)}"></label>
+      <label class="field">Daily calories before pregnancy<input type="number" inputmode="numeric" data-setting="baseCal" value="${esc(S().baseCal)}"></label>
+      <p class="small muted">The app adds about 340 a day in the second trimester and 450 in the third. Current target: ${num(calTarget())}.</p>
+      <label class="field">Or use the target from your OB<input type="number" inputmode="numeric" data-setting="calOverride" value="${esc(S().calOverride)}" placeholder="Leave blank to use the estimate"></label>
+    </div>
+
+    <h2>Sync</h2>
+    <div class="card form">
+      <p class="small muted">${syncText}</p>
+      ${['synced','offline'].includes(sync.mode) ? `<button class="btn ghost" id="sync-now" type="button">Sync now</button>` : ''}
+    </div>
+
     <h2>Reminders</h2>
-    <div class="card stack">
-      <p class="small muted" style="margin:0">${permText}</p>
+    <div class="card form">
+      <p class="small muted">${permText}</p>
       ${perm === 'default' ? `<button class="btn" id="s-notify" type="button">Turn on reminders</button>` : ''}
     </div>
+
     <h2>Daily goals</h2>
     <div class="stack" id="goals">${goals}</div>
-    <div class="row" style="margin-top:10px">
+    <div class="row mt">
       <button class="btn ghost" id="s-add" type="button">Add a goal</button>
       <button class="btn ghost" id="s-defaults" type="button">Restore defaults</button>
     </div>
+
+    ${state.meta.favorites.length ? `<h2>Your usuals</h2><ul class="list">${state.meta.favorites.map(f => `<li><span class="what">${esc(f.name)}<span>${f.cal ? num(f.cal)+' cal':''}${f.caf ? ` · ${f.caf} mg caffeine`:''}</span></span>
+      <button class="x" data-fdel="${f.id}" aria-label="Remove ${esc(f.name)}">×</button></li>`).join('')}</ul>` : ''}
+
     <h2>Backup</h2>
-    <p class="small muted">Everything is saved on this phone only. Export a backup now and then so nothing is lost if the browser data gets cleared.</p>
     <div class="row">
       <button class="btn ghost" id="s-export" type="button">Export backup</button>
-      <label class="btn ghost" style="text-align:center;cursor:pointer">Import backup<input type="file" id="s-import" accept="application/json" hidden></label>
+      <label class="btn ghost" style="cursor:pointer">Import backup<input type="file" id="s-import" accept="application/json" hidden></label>
     </div>
-    <div class="row" style="margin-top:10px">
-      <button class="btn danger" id="s-reset" type="button">Clear all data</button>
-    </div>`;
+    <div class="row mt"><button class="btn danger" id="s-reset" type="button">Clear all data</button></div>`;
 }
 
-/* ------------------------------------------------------------------
-   Render + events
-------------------------------------------------------------------- */
+/* ==================================================================
+   Render and events
+================================================================== */
+let tab = 'today';
+const VIEWS = {today:viewToday, log:viewLog, body:viewBody, insights:viewInsights, more:viewMore};
 function render(opts = {}){
-  const app = $('#app');
-  app.innerHTML = tab === 'today' ? viewToday() : tab === 'log' ? viewLog() : tab === 'insights' ? viewInsights() : viewSettings();
+  $('#app').innerHTML = VIEWS[tab]();
   document.querySelectorAll('nav button').forEach(b => b.setAttribute('aria-current', b.dataset.tab === tab ? 'page' : 'false'));
-  if(opts.pop){ const c = app.querySelector(`[data-check="${CSS.escape(opts.pop)}"]`); c && c.classList.add('pop'); }
-  if(tab === 'settings') bindSettings();
+  if(opts.pop){ const c = document.querySelector(`[data-check="${CSS.escape(opts.pop)}"]`); c && c.classList.add('pop'); }
 }
-
+function safeRender(){
+  const a = document.activeElement;
+  if(a && a.closest('#app') && a.matches('input,textarea,select')) return;
+  render();
+}
 document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => { tab = b.dataset.tab; render(); window.scrollTo(0,0); }));
 
-$('#app').addEventListener('click', e => {
+const val = id => document.getElementById(id)?.value.trim() ?? '';
+
+$('#app').addEventListener('click', async e => {
   const el = e.target.closest('button,[data-goto]'); if(!el) return;
   const ds = el.dataset;
-  if(ds.goto){ tab = ds.goto; render(); return; }
+
+  if(ds.goto){ tab = ds.goto; render(); window.scrollTo(0,0); return; }
   if(ds.act === 'tap') return tapTask(ds.id);
-  if(ds.act === 'inc'){ bump(ds.id, 1); save(); render({pop:ds.id}); return; }
-  if(ds.act === 'dec'){ bump(ds.id, -1); save(); render(); return; }
+  if(ds.act === 'inc'){ bump(ds.id, 1); touchDay(); render({pop:ds.id}); return; }
+  if(ds.act === 'dec'){ bump(ds.id, -1); touchDay(); render(); return; }
   if(ds.mode){ logMode = ds.mode; render(); return; }
   if(ds.min){ moveMinutes = Number(ds.min); render(); return; }
   if(ds.log){ const item = LIB.find(i => i.id === ds.log); if(item) addLog(item, item.kind==='move' ? moveMinutes : 0); return; }
+  if(ds.fav){ const f = state.meta.favorites.find(x => x.id === ds.fav); if(f) addLog({...f, kind:'eat', id:null}); return; }
   if(ds.del){
     const d = day(), idx = d.logs.findIndex(l => l.id === ds.del);
-    if(idx > -1){ const [gone] = d.logs.splice(idx,1); save(); render(); toast(`Removed ${gone.name}`, () => d.logs.splice(idx,0,gone)); }
+    if(idx > -1){ const [gone] = d.logs.splice(idx,1); touchDay(); render(); toast(`Removed ${gone.name}`, () => { d.logs.splice(idx,0,gone); touchDay(); }); }
     return;
   }
-  if(el.id === 'c-add'){
-    const name = $('#c-name').value.trim();
-    if(!name){ $('#c-name').focus(); toast('Add a name first'); return; }
-    const caf = Math.max(0, Number($('#c-caf')?.value || 0));
-    addLog({kind:logMode, name, r:$('#c-r').value, caf, tip:''}, logMode==='move' ? moveMinutes : 0);
+  if(ds.edit){
+    const l = day().logs.find(x => x.id === ds.edit); if(!l || l.kind !== 'eat') return;
+    const v = prompt(`Calories for ${l.name}`, l.cal || '');
+    if(v !== null && v.trim() !== '' && !isNaN(Number(v))){ l.cal = Math.max(0, Math.round(Number(v))); touchDay(); render(); }
+    return;
+  }
+  if(ds.mood){ const d = day(); d.mood = d.mood === Number(ds.mood) ? 0 : Number(ds.mood); touchDay(); render(); return; }
+  if(ds.sym || ds.urg){
+    const d = day(), list = ds.sym ? d.symptoms : d.urgent, v = ds.sym || ds.urg;
+    const i = list.indexOf(v); i > -1 ? list.splice(i,1) : list.push(v);
+    touchDay(); render(); return;
+  }
+  if(ds.wdel){ const i = state.meta.weights.findIndex(w => w.id === ds.wdel); if(i>-1){ const [g] = state.meta.weights.splice(i,1); touchMeta(); render(); toast('Weight removed', () => { state.meta.weights.push(g); touchMeta(); }); } return; }
+  if(ds.adel){ const i = state.meta.appts.findIndex(a => a.id === ds.adel); if(i>-1){ const [g] = state.meta.appts.splice(i,1); touchMeta(); render(); toast(`Removed ${g.title}`, () => { state.meta.appts.push(g); touchMeta(); }); } return; }
+  if(ds.qdel){ state.meta.questions = state.meta.questions.filter(q => q.id !== ds.qdel); touchMeta(); render(); return; }
+  if(ds.fdel){ state.meta.favorites = state.meta.favorites.filter(f => f.id !== ds.fdel); touchMeta(); render(); return; }
+  if(ds.rm !== undefined){
+    const i = Number(ds.rm), [gone] = state.meta.tasks.splice(i,1);
+    touchMeta(); render(); toast(`Removed ${gone.name}`, () => { state.meta.tasks.splice(i,0,gone); touchMeta(); }); return;
+  }
+
+  switch(el.id){
+    case 'pin-go': {
+      const v = val('pin-in'); if(!v) return;
+      pin = v; lsSet(LS_PIN, v); sync.mode = 'checking'; sync.pinTried = true;
+      await pull(); return;
+    }
+    case 'c-add': {
+      const name = val('c-name');
+      if(!name){ document.getElementById('c-name').focus(); toast('Add a name first'); return; }
+      const item = {kind:logMode, name, r:val('c-r'), cal:Math.max(0, Math.round(Number(val('c-cal'))||0)), caf:Math.max(0, Math.round(Number(val('c-caf'))||0)), tip:''};
+      if(document.getElementById('c-fav')?.checked && !state.meta.favorites.some(f => f.name.toLowerCase() === name.toLowerCase())){
+        state.meta.favorites.push({id:uid(), name, r:item.r, cal:item.cal, caf:item.caf}); touchMeta();
+      }
+      addLog(item, logMode==='move' ? moveMinutes : 0); return;
+    }
+    case 'w-add': {
+      const lb = Number(val('w-lb')), date = val('w-date') || todayKey();
+      if(!(lb > 50 && lb < 600)){ toast('Enter your weight in pounds'); return; }
+      state.meta.weights = state.meta.weights.filter(w => w.date !== date);
+      state.meta.weights.push({id:uid(), date, lb:Math.round(lb*10)/10});
+      touchMeta(); render(); toast(`Saved ${lb} lb`); return;
+    }
+    case 'kick-tap': {
+      if(!state.meta.kickSession) state.meta.kickSession = {start:Date.now(), count:1};
+      else state.meta.kickSession.count++;
+      if(navigator.vibrate) navigator.vibrate(15);
+      if(state.meta.kickSession.count >= 10) return finishKicks(true);
+      touchMeta(); render(); return;
+    }
+    case 'kick-done': return finishKicks(true);
+    case 'kick-cancel': if(confirm('Discard this kick count?')) finishKicks(false); return;
+    case 'a-add': {
+      const title = val('a-title'), date = val('a-date');
+      if(!title || !date){ toast('Add a name and date'); return; }
+      state.meta.appts.push({id:uid(), title, date, time:val('a-time'), notes:val('a-notes')});
+      touchMeta(); render(); toast(`Added ${title}`); return;
+    }
+    case 'q-add': {
+      const text = val('q-text'); if(!text) return;
+      state.meta.questions.push({id:uid(), text, done:false}); touchMeta(); render();
+      document.getElementById('q-text')?.focus(); return;
+    }
+    case 'sync-now': await pull(); render(); toast(sync.mode === 'synced' ? 'Synced' : 'Couldn’t reach the server'); return;
+    case 's-notify': try{ await Notification.requestPermission(); }catch(err){} render(); return;
+    case 's-add': {
+      state.meta.tasks.push({id:uid(), name:'New goal', icon:'⭐', target:1, unit:'', time:''});
+      touchMeta(); render();
+      const inputs = document.querySelectorAll('#goals input[data-f="name"]'); inputs[inputs.length-1]?.select(); return;
+    }
+    case 's-defaults':
+      if(confirm('Replace your goals with the default list? Your history stays.')){ state.meta.tasks = clone(DEFAULT_TASKS); touchMeta(); render(); }
+      return;
+    case 's-export': {
+      const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = `for-two-backup-${todayKey()}.json`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000); return;
+    }
+    case 's-reset':
+      if(confirm('Delete all goals, logs, weights and appointments everywhere, including the synced copy? Export a backup first if you want to keep it.')){
+        state = {meta:freshMeta(), days:{}}; pending = {meta:false, days:[]}; persist();
+        if(['synced','offline'].includes(sync.mode)){ try{ await api('POST', {reset:true}); }catch(err){} }
+        render(); toast('All data cleared');
+      }
+      return;
   }
 });
 
-function bindSettings(){
-  $('#s-name').addEventListener('change', e => { state.settings.name = e.target.value.trim(); save(); });
-  $('#s-due').addEventListener('change', e => { state.settings.dueDate = e.target.value; save(); toast('Due date saved'); });
-  $('#goals').addEventListener('change', e => {
-    const box = e.target.closest('.goal-edit'); if(!box) return;
-    const t = state.tasks[Number(box.dataset.idx)], f = e.target.dataset.f;
-    if(!t || !f) return;
-    t[f] = f === 'target' ? Math.max(1, Math.min(30, Number(e.target.value)||1)) : e.target.value;
-    save();
-  });
-  $('#goals').addEventListener('click', e => {
-    const b = e.target.closest('[data-rm]'); if(!b) return;
-    const i = Number(b.dataset.rm), [gone] = state.tasks.splice(i,1);
-    save(); render(); toast(`Removed ${gone.name}`, () => state.tasks.splice(i,0,gone));
-  });
-  $('#s-add').addEventListener('click', () => {
-    state.tasks.push({id:uid(), name:'New goal', icon:'⭐', target:1, unit:'', time:''});
-    save(); render();
-    const inputs = document.querySelectorAll('#goals input[data-f="name"]');
-    inputs[inputs.length-1]?.select();
-  });
-  $('#s-defaults').addEventListener('click', () => {
-    if(confirm('Replace your goals with the default list? Your history stays.')){ state.tasks = structuredClone(DEFAULT_TASKS); save(); render(); }
-  });
-  $('#s-notify')?.addEventListener('click', async () => {
-    try{ await Notification.requestPermission(); }catch(e){}
-    render();
-  });
-  $('#s-export').addEventListener('click', () => {
-    const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download = `for-two-backup-${todayKey()}.json`;
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  });
-  $('#s-import').addEventListener('change', e => {
-    const file = e.target.files[0]; if(!file) return;
+$('#app').addEventListener('keydown', e => {
+  if(e.key !== 'Enter') return;
+  if(e.target.id === 'pin-in') document.getElementById('pin-go').click();
+  if(e.target.id === 'q-text') document.getElementById('q-add').click();
+});
+
+$('#app').addEventListener('change', e => {
+  const el = e.target, ds = el.dataset;
+  if(ds.setting){
+    S()[ds.setting] = ['preWeight','baseCal','calOverride'].includes(ds.setting) ? (el.value === '' ? '' : Number(el.value)) : el.value.trim();
+    touchMeta();
+    if(tab === 'body' || ds.setting === 'dueDate') render();
+    return;
+  }
+  if(ds.height){
+    const ft = Number(document.querySelector('[data-height="ft"]').value) || 0;
+    const inch = Number(document.querySelector('[data-height="in"]').value) || 0;
+    S().heightIn = ft ? ft*12 + inch : '';
+    touchMeta(); if(tab === 'body') render(); return;
+  }
+  if(ds.qtoggle){ const q = state.meta.questions.find(x => x.id === ds.qtoggle); if(q){ q.done = el.checked; touchMeta(); render(); } return; }
+  if(el.id === 'feel-note'){ day().note = el.value; touchDay(); return; }
+  if(ds.f){
+    const box = el.closest('.goal-edit'), t = state.meta.tasks[Number(box.dataset.idx)];
+    if(!t) return;
+    t[ds.f] = ds.f === 'target' ? Math.max(1, Math.min(30, Number(el.value)||1)) : el.value;
+    touchMeta(); return;
+  }
+  if(el.id === 's-import'){
+    const file = el.files[0]; if(!file) return;
     const reader = new FileReader();
     reader.onload = () => {
       try{
         const s = JSON.parse(reader.result);
-        if(!Array.isArray(s.tasks) || typeof s.days !== 'object') throw new Error();
-        state = Object.assign(freshState(), s); save(); render(); toast('Backup imported');
+        let next;
+        if(s.meta) next = {meta:normalizeMeta(s.meta), days:s.days || {}};
+        else if(Array.isArray(s.tasks)){ const m = freshMeta(); Object.assign(m.settings, s.settings||{}); m.tasks = s.tasks; next = {meta:m, days:s.days||{}}; }
+        else throw new Error();
+        state = next; pending = {meta:true, days:Object.keys(state.days)};
+        state.meta.updatedAt = Date.now(); persist(); schedulePush(); render(); toast('Backup imported');
       }catch(err){ toast('That file isn’t a backup from this app'); }
     };
     reader.readAsText(file);
-  });
-  $('#s-reset').addEventListener('click', () => {
-    if(confirm('Delete all goals, logs and history on this device? Export a backup first if you want to keep it.')){
-      state = freshState(); save(); render(); toast('All data cleared');
-    }
-  });
-}
+  }
+});
 
-/* ------------------------------------------------------------------
-   Reminders: checks every minute while the app is open
-------------------------------------------------------------------- */
+/* ==================================================================
+   Timers: reminders, kick clock, sync
+================================================================== */
+function notify(title, body, tag){
+  if('Notification' in window && Notification.permission === 'granted'){
+    try{ new Notification(title, {body, icon:'icon-192.png', tag}); }catch(e){}
+  }
+}
 function checkReminders(){
-  const nm = nowMinutes(), d = day();
+  const nm = nowMinutes(), d = day(), tk = todayKey();
   let changed = false;
-  state.tasks.forEach(t => {
+  state.meta.tasks.forEach(t => {
     if(!t.time || progress(t) >= 1 || d.notified[t.id]) return;
     const tm = toMinutes(t.time);
-    if(nm >= tm && nm - tm < 90){
-      d.notified[t.id] = true; changed = true;
-      if('Notification' in window && Notification.permission === 'granted'){
-        try{ new Notification(`${t.icon} ${t.name}`, {body:'Tap the app to check it off.', icon:'icon-192.png', tag:t.id}); }catch(e){}
-      }
-    }
+    if(nm >= tm && nm - tm < 90){ d.notified[t.id] = true; changed = true; notify(`${t.icon} ${t.name}`, 'Open the app to check it off.', t.id); }
   });
-  if(changed) save();
-  if(tab === 'today' && !document.activeElement?.matches('input,select')) render();
+  state.meta.appts.forEach(a => {
+    const key = 'appt-' + a.id;
+    if(a.date !== tk || !a.time || d.notified[key]) return;
+    const tm = toMinutes(a.time);
+    if(nm >= tm - 60 && nm < tm){ d.notified[key] = true; changed = true; notify(`🩺 ${a.title} at ${fmtTime(a.time)}`, a.notes || 'Your questions are saved in the app.', key); }
+  });
+  if(changed) touchDay(tk);
 }
 let lastDay = todayKey();
 setInterval(() => {
-  if(todayKey() !== lastDay){ lastDay = todayKey(); render(); }
+  if(todayKey() !== lastDay){ lastDay = todayKey(); safeRender(); }
   checkReminders();
+  if(tab === 'today') safeRender();
 }, 60000);
-document.addEventListener('visibilitychange', () => { if(!document.hidden){ render(); checkReminders(); } });
+setInterval(() => {
+  const ks = state.meta.kickSession, el = document.getElementById('kick-elapsed');
+  if(ks && el) el.textContent = fmtDur(Date.now() - ks.start);
+}, 1000);
+setInterval(() => { if(!document.hidden && !pushing) pull(); }, 90000);
+document.addEventListener('visibilitychange', () => { if(!document.hidden){ pull(); checkReminders(); } });
+window.addEventListener('online', () => pull());
 
 render();
+pull();
 checkReminders();
 </script>
 </body>

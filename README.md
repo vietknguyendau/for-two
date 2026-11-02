@@ -1,33 +1,26 @@
 # Today, for two
 
-A pregnancy daily tracker: tap-to-complete goals, food/drink/movement logging,
-reminders and insights. Plain HTML, no build step.
+Pregnancy tracker: daily goals, food/calorie/movement logging, mood and symptoms
+with warning-sign alerts, weight tracking against the typical range, kick counter,
+appointments and OB questions. Syncs through Upstash Redis, protected by a PIN.
 
-## Deploy to Vercel
+## Files
+- `index.html` – the app
+- `api/state.js` – saves and loads data (all keys start with `ft:`)
+- `package.json` – one dependency (`@upstash/redis`)
+- `manifest.webmanifest`, `icon*` – home screen icon
 
-Option A, command line (fastest):
-1. Install Node.js if you don't have it.
-2. In this folder, run: `npx vercel`
-3. Answer the prompts (no build command, output directory is `.`).
-4. Run `npx vercel --prod` to get the permanent URL.
+## Update the existing for-two repo
+Upload all files to the repo (keep `api` as a folder). Replacing `index.html`
+and `README.md` is fine.
 
-Option B, GitHub:
-1. Create a new GitHub repo and upload these files.
-2. On vercel.com choose Add New > Project, import the repo.
-3. Framework preset: "Other". Leave build settings empty. Deploy.
+## Vercel setup
+1. Import the repo (preset: Other, root `./`) or let it redeploy if already imported.
+2. Storage → connect your existing Upstash Redis database. Prefix: `KV`.
+   Check Production, Preview and Development.
+3. Settings → Environment Variables → add `APP_PIN`. Use something longer than
+   4 digits, e.g. `baby-nguyen-2027`.
+4. Deployments → ⋯ → Redeploy.
+5. Open the link, enter the PIN once per phone. Add to Home Screen on iPhone.
 
-## Put it on her phone
-
-- iPhone: open the URL in Safari > Share > Add to Home Screen. Open it from the
-  Home Screen icon, then go to Settings in the app > Turn on reminders.
-- Android: open in Chrome > menu > Add to Home screen / Install app.
-
-## Good to know
-
-- Data is saved in the phone's browser storage, on that one device. Use
-  Settings > Export backup now and then.
-- Reminders fire while the app is open or recently backgrounded. Guaranteed
-  push notifications when the app is fully closed would need a small backend
-  (e.g. Vercel + a push service), which is a good next step.
-- Food, caffeine and exercise ratings follow general ACOG/FDA guidance and
-  live in the `LIB` list in index.html, so they're easy to edit.
+If the database or PIN isn't set, the app still works and saves on the phone only.
