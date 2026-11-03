@@ -192,6 +192,14 @@ label.check-row input{width:20px;height:20px;accent-color:var(--violet)}
 input[type=color]{width:56px;height:44px;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:3px;flex:none}
 .seg-ctl.tight{margin:6px 0 0}
 
+/* Class notes */
+.note-sec{display:grid;gap:6px;margin-top:14px}
+.note-sec .sec-label{color:var(--ink);font-weight:600;font-size:.98rem}
+.note-sec textarea{min-height:110px}
+.pre{white-space:pre-wrap;overflow-wrap:anywhere}
+.combo-entry{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:8px}
+.combo-entry .ms-when{margin-bottom:4px}
+
 /* Timeline */
 .ms-list{display:flex;flex-direction:column;gap:8px}
 .ms{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px}
@@ -418,14 +426,14 @@ const clone = o => JSON.parse(JSON.stringify(o));
 function freshMeta(){
   return {
     settings:{name:'Christina', dueDate:'', heightIn:'', preWeight:'', baseCal:2000, calOverride:''},
-    tasks:clone(DEFAULT_TASKS), favorites:[], weights:[], appts:[], questions:[], kicks:[], kickSession:null, msDone:{}, msCustom:[], updatedAt:0
+    tasks:clone(DEFAULT_TASKS), favorites:[], weights:[], appts:[], questions:[], kicks:[], kickSession:null, msDone:{}, msCustom:[], classNotes:[], updatedAt:0
   };
 }
 function normalizeMeta(m){
   const f = freshMeta();
   m = m && typeof m === 'object' ? m : {};
   return Object.assign(f, m, {settings:Object.assign(f.settings, m.settings || {})},
-    ...['tasks','favorites','weights','appts','questions','kicks','msCustom'].map(k => ({[k]: Array.isArray(m[k]) ? m[k] : f[k]})));
+    ...['tasks','favorites','weights','appts','questions','kicks','msCustom','classNotes'].map(k => ({[k]: Array.isArray(m[k]) ? m[k] : f[k]})));
 }
 function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
 function lsSet(k,v){ try{ localStorage.setItem(k,v); return true; }catch(e){ return false; } }
@@ -483,7 +491,7 @@ async function pull(){
       await push(); safeRender(); return;
     }
     const keep = new Set(pending.days);
-    if(!pending.meta) state.meta = normalizeMeta(data.meta);
+    if(!pending.meta && !noteTimer) state.meta = normalizeMeta(data.meta);
     for(const [k,v] of Object.entries(data.days || {})) if(!keep.has(k) && v) state.days[k] = v;
     lsSet(LS, JSON.stringify(state));
     sync.mode = 'synced'; sync.last = Date.now();
@@ -1111,7 +1119,115 @@ function viewInsights(){
 /* ==================================================================
    More: appointments, questions, settings
 ================================================================== */
+/* ==================================================================
+   Class notes
+================================================================== */
+const NOTE_TEMPLATES = {
+  lamaze:{label:'Lamaze', sections:[
+    ['breathing','Breathing and relaxation','Which breathing techniques did you practice?'],
+    ['comfort','Comfort and positions','Positions, massage or counterpressure that worked'],
+    ['stages','Stages of labor','Signs to watch for and what happens at each stage'],
+    ['partner','Partner’s role','What to say, do or avoid during contractions'],
+    ['prefs','{name}’s preferences','What she liked or didn’t like during practice'],
+    ['questions','Questions and homework','One per line. Questions can be sent to the OB list.']]},
+  breastfeeding:{label:'Breastfeeding', sections:[
+    ['latch','Latch and positions','What a good latch looks and feels like, positions to try'],
+    ['cues','Feeding cues and schedule','Hunger cues, how often, how to tell baby is getting enough'],
+    ['partner','Partner’s role','How to help with feeds, nights and setup'],
+    ['supplies','Supplies to get','Pump, nursing bras, nipple cream, storage bags'],
+    ['questions','Questions and homework','One per line. Questions can be sent to the OB list.']]},
+  newborn:{label:'Newborn care', sections:[
+    ['basics','Diapering, bathing and cord care',''],
+    ['sleep','Safe sleep',''],
+    ['soothing','Soothing and crying',''],
+    ['call','When to call the pediatrician','Fever thresholds, feeding or breathing concerns'],
+    ['questions','Questions and homework','One per line.']]},
+  general:{label:'Other class', sections:[
+    ['takeaways','Key takeaways',''],
+    ['todo','To-dos',''],
+    ['questions','Questions','One per line.']]}
+};
+let openNoteId = null, combinedTpl = null, noteTimer = null;
+const tplOf = n => NOTE_TEMPLATES[n.template] || NOTE_TEMPLATES.general;
+const secName = label => label.replace('{name}', S().name || 'Mom');
+const findNote = id => state.meta.classNotes.find(n => n.id === id);
+function flushNote(){ if(noteTimer){ clearTimeout(noteTimer); noteTimer = null; touchMeta(); } }
+
+function noteText(n){
+  let t = `${n.title}\n${fmtDate(n.date, {weekday:'long', month:'long', day:'numeric', year:'numeric'})}${n.location ? ` · ${n.location}` : ''}\n`;
+  tplOf(n).sections.forEach(([k,label]) => { const v = (n.sections[k] || '').trim(); if(v) t += `\n${secName(label)}\n${v}\n`; });
+  if((n.other || '').trim()) t += `\nOther notes\n${n.other.trim()}\n`;
+  return t;
+}
+function questionLines(n){
+  return (n.sections.questions || '').split('\n').map(l => l.replace(/^\s*[-•*\d.)]+\s*/, '').trim()).filter(l => l.length > 2);
+}
+async function copyText(text){
+  try{ await navigator.clipboard.writeText(text); return true; }
+  catch(e){
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    let ok = false; try{ ok = document.execCommand('copy'); }catch(err){}
+    ta.remove(); return ok;
+  }
+}
+
+function viewNotesList(){
+  const notes = [...state.meta.classNotes].sort((a,b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt);
+  const lamazeCount = notes.filter(n => n.template === 'lamaze').length;
+  const li = n => {
+    const secs = tplOf(n).sections, filled = secs.filter(([k]) => (n.sections[k] || '').trim()).length;
+    return `<li><button class="what" data-opennote="${esc(n.id)}">${esc(n.title)}<span>${fmtDate(n.date)}${n.location ? ` · ${esc(n.location)}` : ''} · ${filled} of ${secs.length} sections</span></button></li>`;
+  };
+  return `<h2 id="classnotes">Class notes</h2>
+    ${notes.length ? `<ul class="list">${notes.map(li).join('')}</ul>` : `<div class="empty">Take notes during classes and they’ll be here for later, synced to every phone with the PIN.</div>`}
+    <div class="card form mt">
+      <p class="small muted">Start notes for a class</p>
+      <div class="chips">${Object.entries(NOTE_TEMPLATES).map(([k,t]) => `<button class="chip" data-newnote="${k}">${t.label}</button>`).join('')}</div>
+    </div>
+    ${lamazeCount >= 1 ? `<button class="btn ghost mt" data-combined="lamaze" type="button" style="width:100%">All Lamaze notes by topic</button>` : ''}`;
+}
+function viewNoteEditor(n){
+  const t = tplOf(n), qs = questionLines(n);
+  return `<header class="top"><button class="linkish" data-noteback="1">‹ Class notes</button><span class="date">Saves as you type</span></header>
+    <div class="card form mt">
+      <input type="text" data-nf="title" value="${esc(n.title)}" aria-label="Title" style="font-weight:600">
+      <div class="row">
+        <input type="date" data-nf="date" value="${esc(n.date)}" aria-label="Date">
+        <input type="text" data-nf="location" value="${esc(n.location)}" placeholder="Where, e.g. Birthed, Hopkins" aria-label="Location">
+      </div>
+    </div>
+    ${t.sections.map(([k,label,ph]) => `<label class="note-sec"><span class="sec-label">${esc(secName(label))}</span>
+      <textarea data-nf="s.${k}" placeholder="${esc(ph)}">${esc(n.sections[k] || '')}</textarea></label>`).join('')}
+    <label class="note-sec"><span class="sec-label">Other notes</span><textarea data-nf="other" placeholder="Anything else worth remembering">${esc(n.other || '')}</textarea></label>
+    <div class="row mt">
+      <button class="btn ghost" data-notecopy="1" type="button">Copy notes</button>
+      ${t.sections.some(([k]) => k === 'questions') ? `<button class="btn ghost" data-noteq="1" type="button">Send questions to OB list</button>` : ''}
+    </div>
+    <button class="btn danger mt" data-notedel="1" type="button" style="width:100%">Delete these notes</button>`;
+}
+function viewCombined(tplKey){
+  const t = NOTE_TEMPLATES[tplKey];
+  const notes = state.meta.classNotes.filter(n => n.template === tplKey).sort((a,b) => a.date.localeCompare(b.date));
+  const body = t.sections.map(([k,label]) => {
+    const entries = notes.filter(n => (n.sections[k] || '').trim());
+    if(!entries.length) return '';
+    return `<h2>${esc(secName(label))}</h2>${entries.map(n => `<div class="combo-entry"><span class="ms-when">${esc(n.title)} · ${fmtDate(n.date)}</span><p class="pre">${esc(n.sections[k].trim())}</p></div>`).join('')}`;
+  }).join('');
+  return `<header class="top"><button class="linkish" data-noteback="1">‹ Class notes</button></header>
+    <h1 class="mt">All ${t.label} notes</h1>
+    <p class="small muted mt">Every class, grouped by topic. A good starting point for a labor-day cheat sheet.</p>
+    ${body || `<div class="empty mt">Nothing written yet.</div>`}
+    ${notes.length ? `<button class="btn ghost mt" data-combocopy="${tplKey}" type="button" style="width:100%">Copy all</button>` : ''}`;
+}
+
 function viewMore(){
+  if(combinedTpl) return pinGate() + viewCombined(combinedTpl);
+  if(openNoteId){
+    const n = findNote(openNoteId);
+    if(n) return pinGate() + viewNoteEditor(n);
+    openNoteId = null;
+  }
   const tk = todayKey();
   const appts = [...state.meta.appts].sort((a,b) => (a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
   const upcoming = appts.filter(a => a.date >= tk), past = appts.filter(a => a.date < tk).reverse().slice(0,5);
@@ -1149,6 +1265,7 @@ function viewMore(){
     </div>`).join('');
 
   return `${pinGate()}<header class="top"><h1>More</h1></header>
+    ${viewNotesList()}
     ${viewTimeline()}
 
     <h2>Appointments</h2>
@@ -1291,6 +1408,39 @@ $('#app').addEventListener('click', async e => {
     if(done[ds.ms]) delete done[ds.ms]; else done[ds.ms] = todayKey();
     touchMeta(); render(); return;
   }
+  if(ds.newnote){
+    const tpl = ds.newnote, label = NOTE_TEMPLATES[tpl].label;
+    const same = state.meta.classNotes.filter(n => n.template === tpl).sort((a,b) => b.createdAt - a.createdAt);
+    const n = {id:'n-'+uid(), template:tpl, title:`${label}, class ${same.length + 1}`, date:todayKey(), location:same[0]?.location || '', sections:{}, other:'', createdAt:Date.now()};
+    state.meta.classNotes.push(n); openNoteId = n.id; touchMeta(); render(); window.scrollTo(0,0); return;
+  }
+  if(ds.opennote){ flushNote(); openNoteId = ds.opennote; render(); window.scrollTo(0,0); return; }
+  if(ds.combined){ flushNote(); combinedTpl = ds.combined; render(); window.scrollTo(0,0); return; }
+  if(ds.noteback){
+    flushNote(); openNoteId = null; combinedTpl = null; render();
+    document.getElementById('classnotes')?.scrollIntoView({block:'start'}); return;
+  }
+  if(ds.notecopy){ const n = findNote(openNoteId); if(n) toast(await copyText(noteText(n)) ? 'Notes copied' : 'Couldn’t copy on this device'); return; }
+  if(ds.combocopy){
+    const text = state.meta.classNotes.filter(n => n.template === ds.combocopy).sort((a,b) => a.date.localeCompare(b.date)).map(noteText).join('\n— — —\n\n');
+    toast(await copyText(text) ? 'All notes copied' : 'Couldn’t copy on this device'); return;
+  }
+  if(ds.noteq){
+    const n = findNote(openNoteId); if(!n) return;
+    const have = new Set(state.meta.questions.map(q => q.text.toLowerCase()));
+    const add = questionLines(n).filter(q => !have.has(q.toLowerCase()));
+    if(!add.length){ toast('No new questions to add. Put one per line in Questions and homework.'); return; }
+    add.forEach(text => state.meta.questions.push({id:uid(), text, done:false}));
+    flushNote(); touchMeta(); toast(`Added ${add.length} question${add.length>1?'s':''} to the OB list`); return;
+  }
+  if(ds.notedel){
+    const n = findNote(openNoteId);
+    if(n && confirm(`Delete “${n.title}”? This removes it from every phone.`)){
+      state.meta.classNotes = state.meta.classNotes.filter(x => x.id !== n.id);
+      openNoteId = null; noteTimer && clearTimeout(noteTimer); noteTimer = null; touchMeta(); render(); toast('Notes deleted');
+    }
+    return;
+  }
   if(ds.theme){ look.theme = ds.theme; look.accent = ''; look.bg = ''; saveLook(); render(); return; }
   if(ds.lookmode){ look.mode = ds.lookmode; saveLook(); render(); return; }
   if(ds.looktext){ look.text = ds.looktext; saveLook(); render(); return; }
@@ -1386,6 +1536,17 @@ $('#app').addEventListener('click', async e => {
 });
 
 $('#app').addEventListener('input', e => {
+  const nf = e.target.dataset.nf;
+  if(nf && openNoteId){
+    const n = findNote(openNoteId);
+    if(n){
+      if(nf.startsWith('s.')) n.sections[nf.slice(2)] = e.target.value; else n[nf] = e.target.value;
+      n.updatedAt = Date.now();
+      lsSet(LS, JSON.stringify(state));                     // keep a local copy right away
+      clearTimeout(noteTimer); noteTimer = setTimeout(() => { noteTimer = null; touchMeta(); }, 800);
+    }
+    return;
+  }
   if(e.target.id === 'look-accent' || e.target.id === 'look-bg'){
     look[e.target.id === 'look-accent' ? 'accent' : 'bg'] = e.target.value; applyLook();
   }
@@ -1479,7 +1640,8 @@ setInterval(() => {
   if(ks && el) el.textContent = fmtDur(Date.now() - ks.start);
 }, 1000);
 setInterval(() => { if(!document.hidden && !pushing) pull(); }, 90000);
-document.addEventListener('visibilitychange', () => { if(!document.hidden){ pull(); checkReminders(); } });
+document.addEventListener('visibilitychange', () => { if(document.hidden) flushNote(); else { pull(); checkReminders(); } });
+window.addEventListener('pagehide', flushNote);
 window.addEventListener('online', () => pull());
 
 render();
